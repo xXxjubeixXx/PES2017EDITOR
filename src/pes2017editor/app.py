@@ -10,6 +10,7 @@ from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
 from .cpk import CpkArchive, CpkError
+from .database_ui import DatabaseWindow
 
 
 APP_NAME = "PES 2017 Editor"
@@ -88,6 +89,7 @@ class Editor(tk.Tk):
         ttk.Button(actions, text="Extrair arquivo selecionado…", command=self.extract_selected_file).pack(side="left", padx=8)
         ttk.Button(actions, text="Reconstruir CPK…", command=self.rebuild_archive).pack(side="left")
         ttk.Button(actions, text="Instalar no jogo com backup…", command=self.install_archive).pack(side="left", padx=8)
+        ttk.Button(actions, text="Editar jogadores e times…", command=self.open_database_editor).pack(side="left")
         ttk.Label(self, textvariable=self.status, relief="sunken", anchor="w", padding=(8, 5)).pack(fill="x", side="bottom")
 
     def choose_game(self):
@@ -193,6 +195,12 @@ class Editor(tk.Tk):
             return
         archive = self.archive
         self._run_worker("Extraindo CPK…", lambda: archive.extract_all(dest, self._progress))
+
+    def open_database_editor(self):
+        if not self.archive_path:
+            messagebox.showinfo(APP_NAME, "Abra o dt10_win.cpk primeiro.")
+            return
+        DatabaseWindow(self, self.archive_path)
 
     def extract_selected_file(self):
         entry = self._selected_entry()
