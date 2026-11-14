@@ -200,7 +200,7 @@ class Editor(tk.Tk):
         if not self.archive_path:
             messagebox.showinfo(APP_NAME, "Abra o dt10_win.cpk primeiro.")
             return
-        DatabaseWindow(self, self.archive_path)
+        DatabaseWindow(self, self.archive_path, Path(self.game_dir.get()) if self.game_dir.get() else self.archive_path.parent.parent)
 
     def extract_selected_file(self):
         entry = self._selected_entry()

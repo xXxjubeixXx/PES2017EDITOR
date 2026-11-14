@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 import queue
+import os
+import shutil
+import struct
 import tempfile
 import threading
+import time
 from pathlib import Path
 from tkinter import filedialog, messagebox, simpledialog, ttk
 
@@ -13,12 +17,13 @@ from .database import DatabaseError, DatabaseWorkspace
 
 
 class DatabaseWindow(tk.Toplevel):
-    def __init__(self, master, cpk_path: Path):
+    def __init__(self, master, cpk_path: Path, game_dir: Path):
         super().__init__(master)
         self.title("Jogadores e times — banco do jogo")
         self.geometry("930x610")
         self.minsize(760, 490)
         self.source = cpk_path
+        self.game_dir = game_dir
         self.messages = queue.Queue()
         try:
             self.db = DatabaseWorkspace(cpk_path)
@@ -47,7 +52,8 @@ class DatabaseWindow(tk.Toplevel):
         self.competition_tree = self._table(self.competition_tab, ("row", "flags", "code"), ("Registro", "Dados", "Código da competição"), (90, 140, 500))
         for row, flags, code in self.db.competitions:
             self.competition_tree.insert("", "end", values=(row, flags, code))
-        ttk.Label(self.competition_tab, text="As competições são apenas exibidas nesta versão. Para criar uma liga jogável, o editor ainda precisa alterar também as regras e os vínculos dos times.").pack(anchor="w", pady=(6, 0))
+        ttk.Label(self.competition_tab, text="A criação acrescenta registros de competição, regras, times, elencos e vínculos. É experimental e precisa ser validada no jogo.").pack(anchor="w", pady=(6, 0))
+        ttk.Button(self.competition_tab, text="Criar liga com times e elencos…", command=self.create_league).pack(anchor="w", pady=(6, 0))
         self.player_tree.bind("<Double-1>", lambda _e: self.edit_player())
         self.team_tree.bind("<Double-1>", lambda _e: self.edit_team())
         self.player_filter = tk.StringVar()
@@ -72,6 +78,7 @@ class DatabaseWindow(tk.Toplevel):
         ttk.Button(actions, text="CSV times…", command=self.csv_teams).pack(side="left", padx=5)
         bottom = ttk.Frame(body)
         bottom.pack(fill="x", pady=(10, 0))
+        ttk.Button(bottom, text="Instalar no jogo com backup…", command=self.install).pack(side="left")
         ttk.Button(bottom, text="Salvar banco em um CPK novo…", command=self.save_copy).pack(side="right")
         self.status = tk.StringVar(value="Clique duas vezes em um item para editar seu nome.")
         ttk.Label(body, textvariable=self.status, relief="sunken", anchor="w", padding=(6, 4)).pack(fill="x", pady=(8, 0))
@@ -194,6 +201,43 @@ class DatabaseWindow(tk.Toplevel):
         except DatabaseError as exc:
             messagebox.showerror("Criar time", str(exc), parent=self)
 
+    def create_league(self):
+        name = simpledialog.askstring("Criar liga", "Nome da nova liga:", parent=self)
+        if name is None:
+            return
+        templates = self.db.league_templates()
+        codes = [item[0] for item in templates]
+        if not codes:
+            messagebox.showerror("Criar liga", "Não encontrei uma liga-base no banco.", parent=self)
+            return
+        default_code = "ENGLAND_D1_LEAGUE" if "ENGLAND_D1_LEAGUE" in codes else codes[0]
+        template_code = simpledialog.askstring("Criar liga", "Código da liga-base (uma destas opções):\n" + ", ".join(codes[:24]), initialvalue=default_code, parent=self)
+        if template_code is None:
+            return
+        if template_code not in codes:
+            messagebox.showerror("Criar liga", "Código-base não encontrado. Use uma das opções mostradas.", parent=self)
+            return
+        template_team = self._choose_id("ID do time com elenco/formação a copiar:", [t.team_id for t in self.db.teams], self.db.teams[0].team_id)
+        if template_team is None:
+            return
+        count = simpledialog.askinteger("Criar liga", "Quantidade de clubes (2–63):", initialvalue=20, minvalue=2, maxvalue=63, parent=self)
+        if count is None:
+            return
+        if not messagebox.askyesno("Gerar liga experimental", f"Vou criar {count} times e {count * 23} jogadores copiando dados da base, além das tabelas de competição. O resultado será salvo em um CPK novo e pode não carregar no jogo. Continuar?", parent=self):
+            return
+        try:
+            result = self.db.create_league(name, count, template_team, template_code)
+            self.refresh_players()
+            self.refresh_teams()
+            for child in self.competition_tree.get_children():
+                self.competition_tree.delete(child)
+            for row, flags, code in self.db.competitions:
+                self.competition_tree.insert("", "end", values=(row, flags, code))
+            messagebox.showwarning("Liga experimental criada", f"Liga ID {result['competition_id']} criada com {count} times e {result['players_created']} jogadores.\n\nSalve como CPK novo e teste somente em uma cópia do jogo.", parent=self)
+            self.status.set(f"Liga {name} criada como estrutura experimental; salve em um CPK novo.")
+        except (DatabaseError, ValueError, struct.error) as exc:
+            messagebox.showerror("Criar liga", str(exc), parent=self)
+
     def _choose_id(self, prompt, values, initial):
         val = simpledialog.askinteger("Selecionar registro", prompt, initialvalue=initial, minvalue=1, parent=self)
         if val is None:
@@ -254,6 +298,33 @@ class DatabaseWindow(tk.Toplevel):
                 check = CpkArchive(target)
                 self.messages.put(("ok", f"CPK salvo. {len(check.entries)} arquivos no pacote.\n{target}"))
             except Exception as exc:
+                self.messages.put(("error", str(exc)))
+        threading.Thread(target=worker, daemon=True).start()
+
+    def install(self):
+        if not messagebox.askyesno("Instalar alterações", f"O arquivo abaixo será substituído:\n\n{self.source}\n\nSerá feito backup em Backups/PES2017EDITOR. Feche o jogo antes de continuar. A liga e os registros novos ainda são experimentais. Instalar mesmo assim?", parent=self):
+            return
+        self.status.set("Montando e instalando o CPK…")
+        temp_target = self.source.with_name(self.source.stem + ".pes2017editor.tmp.cpk")
+        backup_dir = self.game_dir / "Backups" / "PES2017EDITOR"
+        def worker():
+            try:
+                with tempfile.TemporaryDirectory(prefix="pes2017editor-install-") as temp:
+                    folder = Path(temp) / "cpk"
+                    self.db.archive.extract_all(folder)
+                    self.db.write_to_folder(folder)
+                    CpkArchive.pack_folder(folder, temp_target)
+                # Reopen the output before making a backup or replacing the game file.
+                check = CpkArchive(temp_target)
+                if not check.entries:
+                    raise DatabaseError("A validação do CPK reconstruído falhou")
+                backup_dir.mkdir(parents=True, exist_ok=True)
+                backup = backup_dir / f"{self.source.stem}_{time.strftime('%Y%m%d-%H%M%S')}.cpk"
+                shutil.copy2(self.source, backup)
+                os.replace(temp_target, self.source)
+                self.messages.put(("ok", f"CPK instalado.\nBackup original:\n{backup}"))
+            except Exception as exc:
+                temp_target.unlink(missing_ok=True)
                 self.messages.put(("error", str(exc)))
         threading.Thread(target=worker, daemon=True).start()
 

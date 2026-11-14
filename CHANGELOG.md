@@ -1,5 +1,12 @@
 # Histórico de alterações
 
+## 0.3.0-alpha.1 — 2026-11-14
+
+- Adicionado um gerador experimental de liga no banco do jogo.
+- O gerador duplica regras de uma liga-base, cria times, replica elencos e adiciona vínculos nas tabelas de competição.
+- O resultado é salvo somente em um CPK novo e não foi validado em uma sessão real do PES 2017.
+- Adicionada instalação do banco no `dt10_win.cpk` com confirmação e backup automático.
+
 ## 0.2.0-alpha.1 — 2026-11-14
 
 - Adicionada janela de edição do banco WESYS dentro de `dt10_win.cpk`.

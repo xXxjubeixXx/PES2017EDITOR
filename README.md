@@ -27,15 +27,16 @@ Abra `dt10_win.cpk` e clique em **Editar jogadores e times…** para:
 - alterar nome e nome de camisa de jogadores existentes;
 - criar um jogador copiando as características de outro jogador e vinculá-lo a um time;
 - alterar o nome em inglês de um time;
+- criar uma liga experimental copiando as regras de uma liga-base, com times e elencos gerados;
 - acrescentar um registro de time copiando outro;
 - exportar/importar os nomes existentes por CSV;
 - consultar a lista de competições do banco.
 
-As alterações são gravadas em um CPK novo. A criação de jogadores e times aumenta os registros de `Player.bin` e `Team.bin`; é experimental e pode não ser aceita pelo jogo. O time criado ainda não é associado a uma liga.
+Você pode gravar em um CPK novo ou usar **Instalar no jogo com backup…**. A instalação guarda o original em `Backups/PES2017EDITOR`. A criação de jogadores, times e ligas aumenta registros nos bancos e é experimental; a compatibilidade com o jogo ainda precisa ser confirmada. O gerador de liga copia os atributos dos times/jogadores-base e cria nomes genéricos que podem ser renomeados depois.
 
 ## Limites atuais
 
-- A criação de ligas jogáveis ainda não está implementada. Além do registro de competição, ela depende das regras e da associação dos times. A quantidade de competições e slots também pode depender de limites do executável.
+- O gerador de liga acrescenta linhas em Competition, CompetitionRegulation e CompetitionEntry. O executável pode impor limites de IDs, regiões, menus ou memória que ainda não foram confirmados em uma partida.
 - O editor de jogadores permite nomes e cópia de um modelo; ainda não edita atributos, aparência, posições ou todos os campos de idioma.
 - O editor de times altera o nome em inglês. A criação acrescenta um registro, mas ainda não configura nome em todos os idiomas, escudo, uniforme, técnico ou vaga em liga.
 - Uniformes, faces e estádios ainda dependem de ferramentas específicas para seus formatos.
