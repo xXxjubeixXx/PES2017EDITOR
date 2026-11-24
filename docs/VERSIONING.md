@@ -1,8 +1,8 @@
-# Versionamento
+# PES 2017 EDITOR — Versionamento
 
 O projeto usa SemVer e mantém uma única fonte de verdade:
 
-`Directory.Build.props` → `VersionPrefix = 0.2.1`
+`Directory.Build.props` → `VersionPrefix = 0.3.0`
 
 O SDK .NET deriva automaticamente `Version`, `AssemblyVersion`, `FileVersion` e `InformationalVersion`. `AppMetadata` lê os metadados do assembly para a UI e para o User-Agent. `scripts/build-installer.ps1` e `scripts/release.ps1` leem o mesmo `VersionPrefix` para nomes, instalador, manifesto e tag.
 

@@ -1,33 +1,36 @@
-# Roadmap
+# PES 2017 EDITOR — Roadmap
 
-## Fase 02 — distribuição local concluída; publicação em andamento
+## Fase 03 — motor de dados e primeira edição experimental
 
-- instalador e versão portátil self-contained;
-- versionamento centralizado;
-- atualizador GitHub com manifesto e SHA-256;
-- CI/CD e scripts reproduzíveis;
-- documentação e testes do instalador.
+Implementado e verificado parcialmente:
 
-## Fase 01 — concluída com escopo parcial explícito
+- TOC CRI UTF mascarada;
+- indexação dos 55 CPKs e 40.505 entradas da instalação de referência;
+- WESYS/zlib e payload direto;
+- leitura real de jogadores, times, competições e associações;
+- edição segura do nome do jogador em CPK experimental;
+- reabertura, hashes, backup e preservação dos originais;
+- correção da auditoria de dependências SQLite.
 
-- solução .NET 10/WPF/MVVM modular;
-- detecção da instalação e instalações recentes;
-- indexação virtual CPK, CRI UTF e entradas nativas;
-- exploração, filtro e extração individual;
-- preview hexadecimal e envelope WESYS;
-- cache SQLite e testes reais;
-- documentação e publicação inicial.
+Pendente para encerrar integralmente a fase: teste in-game, precedência comprovada e reconstrução geral de CPK.
 
-## Fase 02 — prioridade
+## Próxima etapa
 
-1. Integrar um backend x86 isolado somente leitura, condicionado a licença e detecção local.
-2. Implementar descompressão comprovada de codecs usados pela instalação.
-3. Criar leitores de BIN com preservação de bytes desconhecidos e testes round-trip.
-4. Identificar os bancos de jogadores/times/competições por evidência, não por nome.
-5. Implementar visualizadores de texto/imagem seguros.
-6. Instrumentar precedência e arquivo efetivamente carregado.
+1. Relatório de compatibilidade por CPK com entradas verificadas e codecs.
+2. Inspetor de registros com offset, bytes e campos conhecidos/desconhecidos.
+3. Diagnóstico de IDs duplicados, órfãos e referências inválidas.
+4. Parser diferencial de atributos e relacionamentos adicionais.
+5. Reconstrução transacional de CPK em pasta de patch separada.
+6. Teste isolado da instalação e do atualizador da v0.3.0.
 
-## Fases posteriores
+## Expansão futura
 
-Validação relacional, edição estruturada, geração de patch separado, reconstrução CPK, backups e aplicação controlada. Só depois de testes em cópias experimentais considerar integração com a instalação real.
+- editar times e competições somente quando os campos forem comprovados;
+- separar limites do BIN, IDs, tabelas e executável;
+- suportar criação de registros sem substituir existentes quando o formato e o executável permitirem;
+- comparar bancos original/experimental sem alterar o projeto paralelo;
+- investigar promoção, rebaixamento, descritores visuais e Master League.
 
+## Regra de qualidade
+
+Cada marco deve possuir evidência reproduzível, teste automatizado ou manual registrado e classificação explícita de limitações. Uma release, sozinha, não encerra uma fase.

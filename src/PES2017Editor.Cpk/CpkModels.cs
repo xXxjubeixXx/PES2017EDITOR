@@ -28,6 +28,6 @@ public sealed record CpkEntry(
     public bool IsCompressed => Codec != 0 && Codec != -1;
 }
 
-public sealed record CpkChunk(string FourCc, long Offset, long Size, bool HasUtfTable, string? FailureReason);
+public sealed record CpkChunk(string FourCc, long Offset, ulong Size, bool HasUtfTable, string? FailureReason);
 
 public sealed record CpkIndexResult(IReadOnlyList<CpkArchive> Archives, IReadOnlyList<CpkEntry> Entries, IReadOnlyList<string> Warnings);

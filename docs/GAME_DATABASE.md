@@ -1,12 +1,25 @@
-# Banco de dados do jogo
+# PES 2017 EDITOR — Banco de dados do jogo
 
-## Estado atual
+## Estado da Fase 03
 
-O editor ainda não identifica com segurança o banco principal de jogadores, times, ligas ou competições. A presença de `Competition.bin` em uma entrada do `dt10_win.cpk` foi comprovada e é coberta por teste de leitura, mas seu schema não foi promovido a parser.
+O banco principal usado pela instalação de referência foi localizado em `common/etc/pesdb` dentro do `dt10_win.cpk`. O editor lê, por meio do CPK e WESYS, `Player.bin`, `Team.bin`, `Competition.bin` e `PlayerAssignment.bin`.
 
-O dashboard deixa as contagens de entidades como não identificadas. O número de CPKs, entradas indexadas, tamanhos e versão do executável só é exibido quando obtido diretamente da instalação.
+Contagens observadas:
 
-## Direção
+- 13.053 jogadores;
+- 521 times;
+- 62 competições;
+- 12.977 associações em `PlayerAssignment.bin`;
+- 12.481 jogadores com um time resolvido no mapa de relacionamentos.
 
-O SQLite é apenas cache/área de trabalho. Os formatos nativos continuarão sendo a fonte de exportação. O modelo deverá aceitar identificadores dinâmicos e separar validade estrutural do BIN de compatibilidade efetiva com uma versão específica de `PES2017.exe`.
+Essas contagens são fatos da instalação de referência, não limites universais do PES 2017.
 
+## Campos usados
+
+Os campos de ID, nome e relacionamento estão documentados em `BINARY_FORMATS.md`. O parser preserva bytes desconhecidos. O único campo editável é o nome do jogador, com capacidade UTF-8 fixa comprovada por round-trip.
+
+Nacionalidade, idade, altura, atributos, aparência, ligas, competições, treinadores, escalações e táticas ainda não são promovidos a campos editáveis. A presença de arquivos com esses nomes não é suficiente para afirmar o schema.
+
+## SQLite
+
+O SQLite é somente cache/área de trabalho para índices e preferências. Os BINs e CPKs nativos continuam sendo a fonte de exportação. O modelo separa validade estrutural do BIN de compatibilidade efetiva com uma versão do `PES2017.exe`.

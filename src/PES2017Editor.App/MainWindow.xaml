@@ -48,15 +48,15 @@
                 <StackPanel DockPanel.Dock="Top" Margin="22,22,18,22">
                     <TextBlock Text="PES 2017" FontSize="22" FontWeight="Bold" />
                     <TextBlock Text="DATABASE EDITOR" FontSize="10" Foreground="{StaticResource PrimaryBrush}" FontWeight="SemiBold" />
-                    <TextBlock Text="Fase 01 · Fundação" FontSize="11" Foreground="{StaticResource MutedBrush}" Margin="0,12,0,0" />
+                    <TextBlock Text="Fase 03 · Motor de dados" FontSize="11" Foreground="{StaticResource MutedBrush}" Margin="0,12,0,0" />
                 </StackPanel>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <ListBox ItemsSource="{Binding Navigation}" SelectedItem="{Binding SelectedNavigation, Mode=TwoWay}" ItemTemplate="{StaticResource NavigationTemplate}" Margin="10,0,10,10" />
                 </ScrollViewer>
                 <Border DockPanel.Dock="Bottom" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0" Padding="18,14">
                     <StackPanel>
-                        <TextBlock Text="MODO SOMENTE LEITURA" FontSize="10" Foreground="{StaticResource WarningBrush}" FontWeight="SemiBold" />
-                        <TextBlock Text="Arquivos originais não são modificados nesta fase." FontSize="11" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,5,0,0" />
+                        <TextBlock Text="MODO SEGURO · CÓPIA EXPERIMENTAL" FontSize="10" Foreground="{StaticResource WarningBrush}" FontWeight="SemiBold" />
+                        <TextBlock Text="Originais preservados · edições somente em cópias experimentais." FontSize="11" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,5,0,0" />
                     </StackPanel>
                 </Border>
             </DockPanel>
@@ -193,6 +193,85 @@
                 </Grid>
             </Grid>
 
+            <Grid Visibility="{Binding SelectedPage, Converter={StaticResource PageConverter}, ConverterParameter=Jogadores}">
+                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                <StackPanel>
+                    <TextBlock Text="Editor de jogadores" FontSize="28" FontWeight="SemiBold" />
+                    <TextBlock Text="Dados reais de Player.bin · nome editável em cópia experimental" Foreground="{StaticResource MutedBrush}" Margin="0,5,0,0" />
+                </StackPanel>
+                <Border Grid.Row="1" Style="{StaticResource CardStyle}" Margin="0,18,14,14" Padding="14">
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBox Text="{Binding PlayerFilterText, UpdateSourceTrigger=PropertyChanged}" ToolTip="Pesquisar por ID, nome, nome na camisa ou time" />
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="16,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="Jogadores: " Foreground="{StaticResource MutedBrush}" />
+                            <TextBlock Text="{Binding PlayerCountText}" FontWeight="SemiBold" />
+                            <TextBlock Text="  ·  " Foreground="{StaticResource BorderBrush}" />
+                            <TextBlock Text="{Binding DatabaseStatus}" Foreground="{StaticResource MutedBrush}" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                <DataGrid Grid.Row="2" ItemsSource="{Binding Players}" IsReadOnly="False" CanUserSortColumns="True" EnableRowVirtualization="True" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" Margin="0,0,14,0">
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers><DataTrigger Binding="{Binding IsVisible}" Value="False"><Setter Property="Visibility" Value="Collapsed" /></DataTrigger></Style.Triggers>
+                        </Style>
+                    </DataGrid.RowStyle>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="90" />
+                        <DataGridTextColumn Header="Nome" Binding="{Binding EditedName, UpdateSourceTrigger=LostFocus}" Width="*" />
+                        <DataGridTextColumn Header="Nome na camisa" Binding="{Binding ShirtName}" IsReadOnly="True" Width="150" />
+                        <DataGridTextColumn Header="Time ID" Binding="{Binding TeamId}" IsReadOnly="True" Width="90" />
+                        <DataGridTextColumn Header="Time" Binding="{Binding TeamName}" IsReadOnly="True" Width="180" />
+                        <DataGridTextColumn Header="Estado" Binding="{Binding State}" IsReadOnly="True" Width="90" />
+                        <DataGridTemplateColumn Header="Ação" Width="190">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Content="Aplicar" Command="{Binding DataContext.SavePlayerCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" Padding="8,4" Margin="2" />
+                                        <Button Content="Descartar" Command="{Binding DataContext.DiscardPlayerCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" Padding="8,4" Margin="2" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+
+            <Grid Visibility="{Binding SelectedPage, Converter={StaticResource PageConverter}, ConverterParameter=Times}">
+                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                <StackPanel>
+                    <TextBlock Text="Editor de times" FontSize="28" FontWeight="SemiBold" />
+                    <TextBlock Text="Registros reais identificados em Team.bin; campos ainda somente leitura." Foreground="{StaticResource MutedBrush}" Margin="0,5,0,0" />
+                </StackPanel>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,18,0,14"><TextBlock Text="Times identificados: " Foreground="{StaticResource MutedBrush}" /><TextBlock Text="{Binding TeamCountText}" Foreground="{StaticResource TextBrush}" /></StackPanel>
+                <DataGrid Grid.Row="2" ItemsSource="{Binding Teams}" IsReadOnly="True" CanUserSortColumns="True" EnableRowVirtualization="True" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" Margin="0,0,14,0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Índice" Binding="{Binding Index}" Width="90" />
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="120" />
+                        <DataGridTextColumn Header="Nome observado" Binding="{Binding Name}" Width="*" />
+                        <DataGridTextColumn Header="Evidência" Binding="{Binding Evidence}" Width="170" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+
+            <Grid Visibility="{Binding SelectedPage, Converter={StaticResource PageConverter}, ConverterParameter=Competições}">
+                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                <StackPanel>
+                    <TextBlock Text="Competições identificadas" FontSize="28" FontWeight="SemiBold" />
+                    <TextBlock Text="Competition.bin · nomes observados sem promover hipóteses a campos editáveis" Foreground="{StaticResource MutedBrush}" Margin="0,5,0,0" />
+                </StackPanel>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,18,0,14"><TextBlock Text="Competições identificadas: " Foreground="{StaticResource MutedBrush}" /><TextBlock Text="{Binding CompetitionCountText}" Foreground="{StaticResource TextBrush}" /></StackPanel>
+                <DataGrid Grid.Row="2" ItemsSource="{Binding Competitions}" IsReadOnly="True" CanUserSortColumns="True" EnableRowVirtualization="True" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" Margin="0,0,14,0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Índice" Binding="{Binding Index}" Width="90" />
+                        <DataGridTextColumn Header="Nome observado" Binding="{Binding Name}" Width="*" />
+                        <DataGridTextColumn Header="Evidência" Binding="{Binding Evidence}" Width="190" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+
             <Grid Visibility="{Binding SelectedPage, Converter={StaticResource PageConverter}, ConverterParameter=Configurações}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel>
@@ -263,10 +342,10 @@
                 </ScrollViewer>
             </Grid>
 
-            <Border Background="#18202B" CornerRadius="8" Padding="22" Visibility="{Binding SelectedPage, Converter={StaticResource UnavailablePageConverter}, ConverterParameter=Visão geral;Arquivos CPK;Configurações;Sobre}">
+            <Border Background="#18202B" CornerRadius="8" Padding="22" Visibility="{Binding SelectedPage, Converter={StaticResource UnavailablePageConverter}, ConverterParameter=Visão geral;Arquivos CPK;Jogadores;Times;Competições;Configurações;Sobre}">
                 <StackPanel>
                     <TextBlock Text="Área preparada para a próxima etapa" FontSize="22" FontWeight="SemiBold" />
-                    <TextBlock Text="Esta seção já está incluída na navegação, mas ainda não possui interpretação comprovada nesta Fase 01." Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,8,0,0" />
+                    <TextBlock Text="Esta seção já está incluída na navegação, mas ainda não possui interpretação comprovada nesta fase." Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,8,0,0" />
                     <TextBlock Text="Nenhum dado fictício é exibido. O próximo parser será conectado ao mesmo núcleo independente da interface." Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,8,0,0" />
                 </StackPanel>
             </Border>

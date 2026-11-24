@@ -3,7 +3,9 @@ param(
     [switch]$PrepareOnly,
     [switch]$Publish,
     [switch]$SkipTests,
-    [switch]$PublicOnly
+    [switch]$PublicOnly,
+    [ValidateSet("stable", "experimental")]
+    [string]$Channel = "stable"
 )
 
 $ErrorActionPreference = "Stop"
@@ -43,7 +45,7 @@ $portableSize = (Get-Item -LiteralPath $portable).Length
 $manifest = [ordered]@{
     version = $version
     publishedAt = (Get-Date).ToUniversalTime().ToString("o")
-    channel = "stable"
+    channel = $Channel
     architecture = "win-x64"
     installer = [ordered]@{
         name = (Split-Path $installer -Leaf)
@@ -72,8 +74,14 @@ if (-not (Get-Command gh -ErrorAction SilentlyContinue)) { throw "GitHub CLI nã
 gh auth status
 if ($LASTEXITCODE -ne 0) { throw "Autenticação GitHub indisponível." }
 if ($Publish) {
-    gh release create $tag $installer $portable $hashFile $manifestPath --repo xXxjubeixXx/PES2017EDITOR `
-        --title "PES 2017 Database Editor $tag" --notes-file (Join-Path $projectRoot "docs/PHASE_02_REPORT.md")
+    $releaseArguments = @(
+        "release", "create", $tag, $installer, $portable, $hashFile, $manifestPath,
+        "--repo", "xXxjubeixXx/PES2017EDITOR",
+        "--title", "PES 2017 Database Editor $tag",
+        "--notes-file", (Join-Path $projectRoot "docs/PHASE_03_REPORT.md")
+    )
+    if ($Channel -eq "experimental") { $releaseArguments += "--prerelease" }
+    & gh @releaseArguments
     if ($LASTEXITCODE -ne 0) { throw "Publicação da release falhou." }
 }
 

@@ -1,5 +1,15 @@
 # Orientação para futuras IAs
 
+## Regras permanentes de identidade e escopo
+
+- Todos os prompts, relatórios e títulos de fases devem começar com `PES 2017 EDITOR`.
+- Este projeto é independente de `PES 2017 SERVER` e `PES 2017 RADMIN`.
+- Os estudos do projeto de expansão de ligas podem ser consultados, mas nunca modificados por este projeto.
+- Nenhuma funcionalidade pode ser declarada concluída sem evidência reproduzível.
+- Uma release não encerra uma fase por si só; cada versão deve apresentar progresso funcional verificável.
+- Os arquivos originais do jogo devem permanecer preservados.
+- O usuário não deve precisar extrair, converter, reconstruir ou manipular CPKs/BINs manualmente.
+
 ## Escopo e segurança
 
 - Trabalhe somente dentro de `PES2017EDITOR`, salvo leitura explícita de evidências no projeto pai.

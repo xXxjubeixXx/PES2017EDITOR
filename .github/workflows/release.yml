@@ -34,7 +34,8 @@ jobs:
         shell: pwsh
         env:
           GITHUB_REF_NAME: ${{ github.ref_name }}
-        run: .\scripts\release.ps1 -PrepareOnly -PublicOnly
+          RELEASE_CHANNEL: ${{ startsWith(github.ref_name, 'v0.3.0') && 'experimental' || 'stable' }}
+        run: .\scripts\release.ps1 -PrepareOnly -PublicOnly -Channel $env:RELEASE_CHANNEL
       - name: Publicar release
         shell: pwsh
         env:
@@ -45,4 +46,6 @@ jobs:
           $root = "artifacts/release/$($version.TrimStart('v'))"
           $installer = "artifacts/installer/PES2017DatabaseEditor-Setup-$version-win-x64.exe"
           $portable = Join-Path $root "PES2017DatabaseEditor-Portable-$version-win-x64.zip"
-          gh release create $version $installer $portable (Join-Path $root 'SHA256SUMS.txt') (Join-Path $root 'update-manifest.json') --repo xXxjubeixXx/PES2017EDITOR --title "PES 2017 Database Editor $version" --notes-file docs/PHASE_02_REPORT.md
+          $args = @('release', 'create', $version, $installer, $portable, (Join-Path $root 'SHA256SUMS.txt'), (Join-Path $root 'update-manifest.json'), '--repo', 'xXxjubeixXx/PES2017EDITOR', '--title', "PES 2017 Database Editor $version", '--notes-file', 'docs/PHASE_03_REPORT.md')
+          if ($version -eq 'v0.3.0') { $args += '--prerelease' }
+          gh @args

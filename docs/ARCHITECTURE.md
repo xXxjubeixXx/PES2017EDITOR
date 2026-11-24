@@ -1,4 +1,4 @@
-# Arquitetura
+# PES 2017 EDITOR — Arquitetura
 
 ## Camadas
 
@@ -12,10 +12,10 @@ Database (SQLite) ─ Infrastructure (hash, recentes)
 
 - `Core`: modelos agnósticos de UI, progresso, compatibilidade e problemas.
 - `Game`: detecta `PES2017.exe`, `Data`, `download`, CPKs, `DpFileList.bin`, patches e saves sem assumir que um arquivo encontrado é efetivamente carregado.
-- `Cpk`: lê o cabeçalho CPK e tabelas CRI UTF quando disponíveis, indexa sob demanda e extrai uma entrada por streaming.
-- `Binary`: registro extensível de parsers; dados desconhecidos permanecem no caminho raw.
-- `Database`: cache WAL de índices; não substitui os arquivos do jogo.
-- `Infrastructure`: hash SHA-256 e instalações recentes.
+- `Cpk`: lê cabeçalho, CRI UTF direto/mascarado, TOC/ETOC/GTOC detectáveis, resolve offsets PES, indexa sob demanda e extrai uma entrada por streaming.
+- `Binary`: WESYS/zlib, WESYS direto e registro extensível de parsers; dados desconhecidos permanecem preservados.
+- `Database`: parsers comprovados de Player, Team, Competition e PlayerAssignment; SQLite é cache WAL e não substitui os arquivos do jogo.
+- `Infrastructure`: hash SHA-256, instalações recentes, projetos, backups e atualização.
 - `App`: navegação, progresso, filtros e comandos; não contém lógica de parsing.
 
 ## Backend CPK
@@ -29,6 +29,10 @@ Database (SQLite) ─ Infrastructure (hash, recentes)
 3. O indexador abre cada CPK, sem extrair o contêiner inteiro.
 4. O resultado é persistido no SQLite local e exibido no dashboard.
 5. A leitura do conteúdo ocorre somente quando uma entrada é selecionada.
+
+## Escrita experimental atual
+
+O nome do jogador passa por `Database` → `WesysCodec` → `ExperimentalCpkWriter`. O writer copia o CPK para uma pasta experimental, grava o slot físico e reabre o resultado antes de marcá-lo como validado. O caminho original nunca é destino.
 
 ## Escrita futura
 

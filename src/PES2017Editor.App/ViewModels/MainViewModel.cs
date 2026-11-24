@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Windows.Input;
 using Microsoft.Win32;
 using PES2017Editor.Binary;
@@ -21,6 +22,8 @@ public sealed class MainViewModel : NotifyPropertyChanged
     private readonly CpkArchiveReader _reader = new();
     private readonly RecentInstallationsStore _recentStore = new();
     private readonly BinaryParserRegistry _binaryParsers = new();
+    private readonly PesDatabaseReader _databaseReader = new();
+    private readonly ExperimentalCpkWriter _experimentalWriter = new();
     private readonly EditorSettingsStore _settingsStore = new();
     private readonly GitHubUpdateService _updateService = new();
     private readonly UpdateHistoryStore _updateHistory = new();
@@ -40,6 +43,12 @@ public sealed class MainViewModel : NotifyPropertyChanged
     private string _updateStatus = "Atualizações ainda não verificadas.";
     private InstallationInfo? _installation;
     private DashboardFacts _facts = new(0, 0, null, 0, 0, null, SupportStatus.NotSupported, []);
+    private CpkIndexResult? _indexResult;
+    private PesDatabaseSnapshot? _database;
+    private string _playerFilterText = string.Empty;
+    private PesPlayerRow? _selectedPlayer;
+    private string _databaseStatus = "Os BINs de jogadores, times e competições ainda não foram carregados.";
+    private string _experimentalStatus = "Nenhuma edição experimental foi gerada.";
 
     public MainViewModel()
     {
@@ -47,6 +56,8 @@ public sealed class MainViewModel : NotifyPropertyChanged
         LoadCommand = new AsyncCommand(LoadAsync, () => !IsLoading && !string.IsNullOrWhiteSpace(SelectedPath));
         CancelCommand = new RelayCommand(_ => Cancel(), _ => IsLoading);
         ExtractCommand = new AsyncCommand<object?>(ExtractAsync);
+        SavePlayerCommand = new AsyncCommand<object?>(SavePlayerAsync);
+        DiscardPlayerCommand = new RelayCommand(parameter => (parameter as PesPlayerRow)?.Discard());
         CheckUpdatesCommand = new AsyncCommand(() => CheckForUpdatesAsync(automatic: false), () => !IsCheckingUpdates && !IsUpdating);
         UpdateNowCommand = new AsyncCommand(DownloadAndLaunchUpdateAsync, () => IsUpdateAvailable && !IsUpdating && !IsCheckingUpdates);
         OpenRepositoryCommand = new RelayCommand(parameter => OpenUrl(parameter));
@@ -65,6 +76,9 @@ public sealed class MainViewModel : NotifyPropertyChanged
     public ObservableCollection<string> RecentInstallations { get; } = [];
     public ObservableCollection<CpkArchiveRow> Archives { get; } = [];
     public ObservableCollection<CpkEntryRow> Entries { get; } = [];
+    public ObservableCollection<PesPlayerRow> Players { get; } = [];
+    public ObservableCollection<PesTeamRow> Teams { get; } = [];
+    public ObservableCollection<PesCompetitionRow> Competitions { get; } = [];
     public ObservableCollection<IntegrityIssue> Issues { get; } = [];
     public ObservableCollection<BinaryField> PreviewFields { get; } = [];
 
@@ -72,6 +86,8 @@ public sealed class MainViewModel : NotifyPropertyChanged
     public ICommand LoadCommand { get; }
     public ICommand CancelCommand { get; }
     public ICommand ExtractCommand { get; }
+    public ICommand SavePlayerCommand { get; }
+    public ICommand DiscardPlayerCommand { get; }
     public ICommand CheckUpdatesCommand { get; }
     public ICommand UpdateNowCommand { get; }
     public ICommand OpenRepositoryCommand { get; }
@@ -99,6 +115,18 @@ public sealed class MainViewModel : NotifyPropertyChanged
         get => _filterText;
         set { if (Set(ref _filterText, value)) RefreshEntries(); }
     }
+    public string PlayerFilterText
+    {
+        get => _playerFilterText;
+        set { if (Set(ref _playerFilterText, value)) RefreshPlayers(); }
+    }
+    public PesPlayerRow? SelectedPlayer
+    {
+        get => _selectedPlayer;
+        set => Set(ref _selectedPlayer, value);
+    }
+    public string DatabaseStatus { get => _databaseStatus; private set => Set(ref _databaseStatus, value); }
+    public string ExperimentalStatus { get => _experimentalStatus; private set => Set(ref _experimentalStatus, value); }
     public string Status { get => _status; private set => Set(ref _status, value); }
     public bool IsLoading { get => _isLoading; private set { if (Set(ref _isLoading, value)) RaiseCommands(); } }
     public double Progress { get => _progress; private set => Set(ref _progress, value); }
@@ -157,6 +185,10 @@ public sealed class MainViewModel : NotifyPropertyChanged
         SupportStatus.Invalid => "Inválida",
         _ => "Não identificada"
     };
+    public string PlayerCountText => _database is null ? "Não identificado" : _database.Players.Count.ToString("N0");
+    public string TeamCountText => _database is null ? "Não identificado" : _database.Teams.Count.ToString("N0");
+    public string CompetitionCountText => _database is null ? "Não identificado" : _database.Competitions.Count.ToString("N0");
+    public string AssignmentCountText => _database is null ? "Não identificado" : _database.Assignments.Count.ToString("N0");
 
     public async Task InitializeAsync()
     {
@@ -201,6 +233,10 @@ public sealed class MainViewModel : NotifyPropertyChanged
             Progress = 92;
             Status = "Identificando banco de dados...";
             Populate(result);
+            Status = "Carregando informações reais de jogadores, times e competições...";
+            _indexResult = result;
+            _database = await _databaseReader.ReadAsync(result, _reader, token);
+            PopulateDatabase(_database);
             try { await new SqliteIndexStore().SaveAsync(result, token); }
             catch (Exception ex) when (ex is IOException or Microsoft.Data.Sqlite.SqliteException)
             {
@@ -243,6 +279,63 @@ public sealed class MainViewModel : NotifyPropertyChanged
         catch (Exception ex)
         {
             Status = $"Falha na extração: {ex.Message}";
+        }
+    }
+
+    private async Task SavePlayerAsync(object? parameter)
+    {
+        if (parameter is not PesPlayerRow row || !row.IsModified)
+        {
+            ExperimentalStatus = "Selecione uma alteração de nome antes de salvar.";
+            return;
+        }
+        var document = _database?.PlayerDocument;
+        if (document is null)
+        {
+            ExperimentalStatus = "Player.bin não está disponível em uma TOC legível.";
+            return;
+        }
+
+        try
+        {
+            var payload = PesDatabaseParser.ReplacePlayerName(document.Wesys.Payload, row.RecordIndex, row.EditedName);
+            var replacement = WesysCodec.Encode(document.Wesys, payload);
+            var sourceHash = Convert.ToHexString(SHA256.HashData(await File.ReadAllBytesAsync(document.Entry.ArchivePath)));
+            var backupDirectory = _settings.BackupsDirectory ?? AppDataPaths.BackupsDirectory;
+            Directory.CreateDirectory(backupDirectory);
+            var backupPath = Path.Combine(backupDirectory,
+                $"{Path.GetFileNameWithoutExtension(document.Entry.ArchivePath)}-{DateTimeOffset.Now:yyyyMMdd-HHmmss}-{sourceHash[..12]}.cpk");
+            if (!File.Exists(backupPath))
+                File.Copy(document.Entry.ArchivePath, backupPath, overwrite: false);
+
+            var root = _settings.ProjectsDirectory ?? AppDataPaths.ProjectsDirectory;
+            var outputDirectory = Path.Combine(root, "experimental");
+            Directory.CreateDirectory(outputDirectory);
+            var fileName = $"dt10_win-player-{row.Id}-{DateTimeOffset.Now:yyyyMMdd-HHmmss}-{Guid.NewGuid():N}.cpk";
+            var outputPath = Path.Combine(outputDirectory, fileName);
+            var result = await _experimentalWriter.CreateLayoutPreservingCopyAsync(document.Entry, replacement, outputPath);
+
+            var reopened = await _reader.ReadAsync(result.OutputPath);
+            var reopenedEntry = reopened.Entries.FirstOrDefault(x =>
+                x.InternalPath.Equals(document.Entry.InternalPath, StringComparison.OrdinalIgnoreCase));
+            if (reopenedEntry is null) throw new InvalidDataException("O CPK experimental não reabriu a entrada modificada.");
+            var reopenedStored = await _reader.ReadEntryAsync(reopenedEntry);
+            var reopenedPayload = WesysCodec.Decode(reopenedStored).Payload;
+            var reopenedPlayer = PesDatabaseParser.ParsePlayers(reopenedPayload).ElementAtOrDefault(row.RecordIndex);
+            if (reopenedPlayer is null || !string.Equals(reopenedPlayer.Name, row.EditedName, StringComparison.Ordinal))
+                throw new InvalidDataException("A validação após a reabertura não encontrou o nome modificado.");
+            if (!EqualOutside(document.Wesys.Payload, payload, row.RecordIndex * PesPlayerRecord.RecordSize + PesPlayerRecord.NameOffset, PesPlayerRecord.NameCapacity))
+                throw new InvalidDataException("A serialização alterou bytes fora do campo de nome permitido.");
+
+            var originalHash = sourceHash;
+            var generatedHash = Convert.ToHexString(SHA256.HashData(await File.ReadAllBytesAsync(result.OutputPath)));
+            row.MarkSaved();
+            ExperimentalStatus = $"CPK experimental validado: {result.OutputPath} · SHA-256 origem {originalHash[..16]}… · cópia {generatedHash[..16]}….";
+            Status = "Edição aplicada somente à cópia experimental; a instalação original permaneceu intacta.";
+        }
+        catch (Exception ex) when (ex is InvalidDataException or IOException or UnauthorizedAccessException)
+        {
+            ExperimentalStatus = $"Edição não aplicada: {ex.Message}";
         }
     }
 
@@ -342,11 +435,51 @@ public sealed class MainViewModel : NotifyPropertyChanged
         RefreshEntries();
     }
 
+    private void PopulateDatabase(PesDatabaseSnapshot database)
+    {
+        Players.Clear();
+        Teams.Clear();
+        Competitions.Clear();
+        var teamById = database.Teams.ToDictionary(x => x.Id);
+        foreach (var player in database.Players)
+        {
+            database.PlayerToTeam.TryGetValue(player.Id, out var teamId);
+            Players.Add(new PesPlayerRow(player, teamId, teamById.TryGetValue(teamId, out var team) ? team.Name : string.Empty));
+        }
+        foreach (var team in database.Teams) Teams.Add(new PesTeamRow(team));
+        foreach (var competition in database.Competitions) Competitions.Add(new PesCompetitionRow(competition));
+        foreach (var warning in database.Warnings) Issues.Add(new IntegrityIssue("DATABASE", warning));
+        DatabaseStatus = $"{Players.Count:N0} jogadores · {Teams.Count:N0} times · {Competitions.Count:N0} competições · {database.Assignments.Count:N0} associações lidas.";
+        OnPropertyChanged(nameof(PlayerCountText));
+        OnPropertyChanged(nameof(TeamCountText));
+        OnPropertyChanged(nameof(CompetitionCountText));
+        OnPropertyChanged(nameof(AssignmentCountText));
+        RefreshPlayers();
+    }
+
     private void RefreshEntries()
     {
         var filter = FilterText.Trim();
         foreach (var row in Entries)
             row.IsVisible = string.IsNullOrWhiteSpace(filter) || row.Entry.InternalPath.Contains(filter, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void RefreshPlayers()
+    {
+        var filter = PlayerFilterText.Trim();
+        foreach (var row in Players)
+            row.IsVisible = string.IsNullOrWhiteSpace(filter) ||
+                row.Id.ToString().Contains(filter, StringComparison.OrdinalIgnoreCase) ||
+                row.EditedName.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
+                row.ShirtName.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
+                row.TeamName.Contains(filter, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool EqualOutside(ReadOnlySpan<byte> original, ReadOnlySpan<byte> updated, int changedOffset, int changedLength)
+    {
+        if (original.Length != updated.Length || changedOffset < 0 || changedOffset > original.Length - changedLength) return false;
+        return original[..changedOffset].SequenceEqual(updated[..changedOffset]) &&
+               original[(changedOffset + changedLength)..].SequenceEqual(updated[(changedOffset + changedLength)..]);
     }
 
     private void Cancel() => _loadCancellation?.Cancel();
@@ -389,6 +522,45 @@ public sealed class CpkEntryRow : NotifyPropertyChanged
     public string OriginalSize => Entry.OriginalSize.ToString("N0");
     public string Codec => Entry.Codec.ToString();
     public bool IsVisible { get => _isVisible; set => Set(ref _isVisible, value); }
+}
+
+public sealed class PesPlayerRow : NotifyPropertyChanged
+{
+    private string _editedName;
+    private bool _isVisible = true;
+    private bool _isSaved;
+    public PesPlayerRow(PesPlayerRecord record, uint teamId, string teamName)
+    {
+        RecordIndex = record.Index; Id = record.Id; OriginalName = record.Name; _editedName = record.Name;
+        ShirtName = record.ShirtName; TeamId = teamId; TeamName = teamName;
+    }
+    public int RecordIndex { get; }
+    public uint Id { get; }
+    public string OriginalName { get; private set; }
+    public string ShirtName { get; }
+    public uint TeamId { get; }
+    public string TeamName { get; }
+    public string EditedName { get => _editedName; set { if (Set(ref _editedName, value)) { _isSaved = false; OnPropertyChanged(nameof(IsModified)); OnPropertyChanged(nameof(State)); } } }
+    public bool IsModified => !string.Equals(OriginalName, EditedName, StringComparison.Ordinal);
+    public bool IsVisible { get => _isVisible; set => Set(ref _isVisible, value); }
+    public string State => _isSaved ? "Validado" : IsModified ? "Alterado" : "Original";
+    public void Discard() { EditedName = OriginalName; _isSaved = false; OnPropertyChanged(nameof(State)); }
+    public void MarkSaved() { OriginalName = EditedName; _isSaved = true; OnPropertyChanged(nameof(OriginalName)); OnPropertyChanged(nameof(IsModified)); OnPropertyChanged(nameof(State)); }
+}
+
+public sealed record PesTeamRow(PesTeamRecord Record)
+{
+    public uint Id => Record.Id;
+    public string Name => Record.Name;
+    public int Index => Record.Index;
+    public string Evidence => Record.NameEvidence.ToString();
+}
+
+public sealed record PesCompetitionRow(PesCompetitionRecord Record)
+{
+    public int Index => Record.Index;
+    public string Name => Record.Name;
+    public string Evidence => Record.Evidence.ToString();
 }
 
 public abstract class NotifyPropertyChanged : INotifyPropertyChanged

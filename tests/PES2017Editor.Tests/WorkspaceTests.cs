@@ -44,9 +44,10 @@ public sealed class WorkspaceTests
         var result = await new CpkIndexService().IndexAsync(installation);
 
         Assert.Equal(55, result.Archives.Count);
-        Assert.Equal(159, result.Entries.Count);
+        Assert.Equal(40_505, result.Entries.Count);
         Assert.Contains(result.Archives, archive => archive.FileName.Equals("dt10_win.cpk", StringComparison.OrdinalIgnoreCase) && archive.HasNativeIndex);
-        Assert.Contains(result.Warnings, warning => warning.Contains("mascarada", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(result.Archives, archive => archive.FileName.Equals("dt11_win.cpk", StringComparison.OrdinalIgnoreCase) && archive.Entries.Count == 757);
+        Assert.DoesNotContain(result.Archives, archive => archive.FailureReason is not null);
     }
 
     [Fact]

@@ -1,71 +1,71 @@
-# Estado do projeto
+# PES 2017 EDITOR — Estado do projeto
 
-Última atualização: 24/11/2026.
+Última atualização: 24/11/2026. Versão centralizada: `0.3.0`.
 
 ## Estado atual
 
-Fase 01 implementada e Fase 02 implementada para distribuição. A solução compila em Release com o SDK x64 do .NET 10. A versão centralizada é `0.2.1`, correção de empacotamento posterior à release `v0.2.0`. O instalador Inno Setup e o sistema de atualização foram implementados e testados em ambiente isolado.
+Fase 03 em implementação avançada. O núcleo lê os CPKs mascarados da instalação de referência, carrega jogadores, times, competições e associações reais e gera uma primeira cópia experimental com nome de jogador alterado. A versão ainda é experimental: não há confirmação dentro do jogo nem reconstrução geral de CPK.
 
-## Implementado
+## Funcionalidades implementadas e verificadas
 
-- solução modular e WPF/MVVM;
-- detector da instalação;
-- recentes;
-- CPK/CRI UTF/TOC nativos;
-- indexação assíncrona e cache SQLite;
-- explorador, filtro, duplicatas e extração individual;
-- preview hexadecimal e parser WESYS inicial;
-- dashboard com fatos reais;
-- navegação preparada para as áreas futuras;
-- testes reais contra a instalação original.
+- solução modular .NET 10/WPF/MVVM;
+- detecção da instalação e instalações recentes;
+- CPK/CRI UTF direto e mascarado com `DecryptUTF`;
+- base física efetiva `min(ContentOffset, TocOffset)`;
+- 55 CPKs e 40.505 entradas indexadas na instalação local;
+- extração individual sob demanda;
+- WESYS/zlib e WESYS direto;
+- `Player.bin`, `Team.bin`, `Competition.bin` e `PlayerAssignment.bin` reais;
+- 13.053 jogadores, 521 times, 62 competições e 12.977 associações;
+- filtro instantâneo e DataGrid virtualizado para jogadores;
+- edição do nome do jogador em cópia experimental;
+- backup SHA-256, reabertura, validação e preservação do CPK original;
+- correção da dependência transitiva SQLite vulnerável;
+- infraestrutura de distribuição v0.2.1 preservada.
 
-## Verificado
+## Evidências
 
-- 55 CPKs encontrados;
-- 159 entradas indexadas pelo backend atual;
-- `dt10_win.cpk`: 156 entradas nativas;
-- `dt43_jpn_win.cpk`: 3 entradas nativas;
-- 9 testes aprovados localmente, incluindo 4 testes públicos e 5 testes com fixtures proprietárias;
-- extração sem alteração do CPK de origem;
-- cache SQLite criado em diretório temporário de teste.
+- `tests/PES2017Editor.Tests/Phase03DataTests.cs` contém round-trip sintético, leitura real e geração/reabertura de CPK;
+- `tests/PES2017Editor.Tests/WorkspaceTests.cs` valida 55 CPKs e 40.505 entradas;
+- comparação independente do `dt20_bra_win.cpk`: 5/5 arquivos iguais byte a byte;
+- `dotnet list PES2017Editor.sln package --include-transitive --vulnerable`: nenhum pacote vulnerável reportado;
+- hashes dos arquivos originais foram preservados antes da edição experimental.
 
-## Fase 02 verificada
+## Problemas pendentes
 
-- repositório remoto auditado;
-- branch de arquivo `archive/pre-phase-02-20261124` criada antes da substituição;
-- instalador Inno Setup compilado;
-- instalação, atalhos, execução e desinstalação isoladas aprovadas;
-- serviço de atualização e manifesto implementados;
-- workflows `ci.yml` e `release.yml` criados;
-- tag/release `v0.2.0` preservada e confirmada remotamente;
-- tag/release `v0.2.1` publicada e confirmada remotamente;
-- commit da implementação publicado: `1df85a4f13a008da9f363c345f4c630809508a8c`;
-- release principal: https://github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.2.1;
-- branch de backup: `archive/pre-phase-02-20261124` → `7eef9445fd4177963a1c996b0cf0a1997e8dcff2`.
+- validação manual dentro do PES 2017;
+- precedência efetiva entre Data, download, Data Packs, patches e EDIT;
+- reconstrução geral de TOC/ETOC/GTOC e criação de novas entradas;
+- CRILAYLA e outros codecs ainda não integrados ao backend principal;
+- campos de atributos, ligas, competições, aparências e táticas;
+- diagnóstico relacional completo e inspetor diferencial de registros;
+- testes isolados de instalação/atualização para a nova versão;
+- Authenticode e assinatura de manifesto.
 
-Executável local gerado: `artifacts/installer-payload/PES2017DatabaseEditor.exe` (self-contained, win-x64, versão 0.2.1, 142.821.072 bytes). Os artefatos recomendados são os anexados à release remota `v0.2.1`, verificados por manifesto e SHA-256.
+## Decisões arquiteturais
 
-## Problemas existentes
+O leitor CPK resolve detalhes de contêiner; o módulo Binary resolve WESYS; Database interpreta somente campos comprovados; App usa MVVM e não conhece offsets. O SQLite é cache auxiliar. A escrita atual é explicitamente layout-preserving e isolada em `%LOCALAPPDATA%\\PES2017EDITOR\\projects\\experimental`.
 
-53 CPKs têm TOC mascarada para o backend gerenciado. Não há parser de entidades de banco, descompressão completa, edição, reconstrução ou aplicação de patch. A dependência SQLite emite NU1903 transitivo. Precedência de arquivos permanece desconhecida.
+`CpkMaker.DLL` não é redistribuída: a licença/procedência não autoriza incorporá-la. O algoritmo mínimo de UTF mascarado foi reproduzido internamente após inspeção da implementação pública de referência.
 
-## Decisões
-
-- .NET 10/WPF foi mantido por compatibilidade com Windows 10/11 e separação clara entre núcleo e UI.
-- O aplicativo principal é x64.
-- O backend CPK é substituível por `ICpkArchiveBackend`.
-- O SQLite é cache, nunca fonte final do jogo.
-- Nenhuma DLL externa foi redistribuída.
-
-## Comandos
+## Comandos reproduzíveis
 
 ```powershell
 & 'C:\Program Files\dotnet\dotnet.exe' restore .\PES2017Editor.sln
 & 'C:\Program Files\dotnet\dotnet.exe' build .\PES2017Editor.sln -c Release --no-restore
 & 'C:\Program Files\dotnet\dotnet.exe' test .\PES2017Editor.sln -c Release --no-restore
+& 'C:\Program Files\dotnet\dotnet.exe' list .\PES2017Editor.sln package --include-transitive --vulnerable
 ```
 
-## Próximas etapas
+## Últimos resultados
 
-Baixar e testar a atualização real de uma versão anterior em ambiente isolado e depois retomar TOCs mascaradas, descompressão, parsers BIN, precedência e pipeline transacional de escrita.
+- Build Debug: 0 avisos, 0 erros.
+- Testes completos: 16 aprovados, 0 reprovados, 0 ignorados.
+- Testes públicos: 8 aprovados.
+- Testes proprietários: 8 aprovados.
+- Release estável anterior: `v0.2.1`, [GitHub](https://github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.2.1).
+- Publicação v0.3.0: ainda não confirmada; não declarar release até os artefatos e a validação correspondente existirem.
 
+## Próximo passo seguro
+
+Executar a edição de um jogador em cópia isolada do jogo, registrar CPK/BIN/ID/nome/hashes e só então decidir entre pré-release experimental e release estável.

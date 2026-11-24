@@ -1,26 +1,63 @@
-# CPK, CRI UTF e compressão
+# PES 2017 EDITOR — CPK, CRI UTF e conteúdo PES
 
-## Evidência comprovada
+## Estado comprovado
 
-O CPK real analisado começa com `CPK ` e contém uma tabela `@UTF` no cabeçalho a partir de `0x10`. A TOC nativa do `dt10_win.cpk` foi decodificada com 156 entradas. O `dt43_jpn_win.cpk` também possui TOC nativa, com 3 entradas.
+O backend lê os CPKs reais da instalação local, começando por `CPK `. O pacote UTF do cabeçalho começa normalmente em `0x10`. CPKs da instalação também podem mascarar o pacote UTF do cabeçalho e das tabelas.
 
-Para CRI UTF, a implementação usa inteiros big-endian e a estrutura observada no código de referência `vgmstream/src/coding/cri_utf.c` ([fonte](https://github.com/vgmstream/vgmstream/blob/master/src/coding/cri_utf.c)):
+O formato CRI UTF usa cabeçalho e descritores big-endian. Os números do envelope CPK que delimitam o pacote UTF são little-endian. A tabela contém colunas por nome, incluindo `DirName`, `FileName`, `FileOffset`, `Filesize`, `ExtractSize` e `Codec`.
 
-- tamanho da tabela em `+0x04`, relativo ao início da tabela;
-- versão em `+0x08`;
-- offsets relativos para linhas, strings e dados;
-- quantidade de colunas, largura de linha e quantidade de linhas;
-- descritores de coluna com flags de nome/default/row e tipo primitivo.
+## UTF mascarado
 
-O parser local suporta tipos inteiros, ponto flutuante, string, dados variáveis e preserva os valores lidos como objetos para inspeção.
+Quando o pacote não começa em `@UTF`, o editor aplica a transformação observada em `CriPakTools/CriPakTools/CPK.cs`:
 
-## TOC e entradas
+```text
+m = 0x0000655f
+t = 0x00004115
+para cada byte d:
+    saída = d XOR (m AND 0xff)
+    m = m * t em aritmética de 32 bits
+```
 
-O leitor procura offsets declarados pelo cabeçalho e assinaturas `TOC `, `ITOC`, `ETOC` e `GTOC` em uma janela inicial limitada. Para uma TOC `@UTF`, usa campos conhecidos por nome como `DirName`, `FileName`, `FileOffset`, `Filesize`, `ExtractSize` e `Codec`, validando caminho e intervalo antes de criar uma entrada.
+O código está em `src/PES2017Editor.Cpk/CriUtfCipher.cs`. A implementação externa não é uma dependência do produto e `CpkMaker.DLL` não é distribuída.
 
-## Estado parcial
+## Offsets
 
-53 dos 55 CPKs da instalação original apresentam `TOC ` detectável, porém o payload não começa por `@UTF` decodificável. Isso é registrado como limitação, não como CPK inválido. A ferramenta x86 existente `CpkMaker.DLL` e os scripts de diagnóstico do projeto pai demonstram uma rota alternativa de leitura, mas ela ainda não foi integrada nem licenciada para redistribuição.
+O `FileOffset` encontrado na TOC é relativo à base efetiva da área do CPK no formato PES observado. A base usada pelo leitor é a menor entre os valores positivos `ContentOffset` e `TocOffset`. O offset físico retornado às camadas superiores é:
 
-O leitor atual lê bytes armazenados e não promete descompressão completa de todos os codecs CPK. O parser WESYS identifica o invólucro em BINs, mas ainda não expõe a escrita/descompressão de seu payload. Não há reconstrução de CPK na Fase 01.
+```text
+physicalOffset = FileOffset + min(ContentOffset, TocOffset)
+```
 
+Quando o cabeçalho não é decodificável, a base é zero e a entrada é tratada como não verificada. Na instalação de referência o cabeçalho e as TOCs foram decodificados para os 55 CPKs.
+
+## Compatibilidade observada na instalação de referência
+
+| Arquivo | Entradas |
+|---|---:|
+| `dt10_win.cpk` | 156 |
+| `dt43_jpn_win.cpk` | 3 |
+| `dt11_win.cpk` | 757 |
+| Todos os 55 CPKs | 40.505 |
+
+Cada linha é validada por caminho, offset físico, tamanho armazenado e limite do contêiner. Isso comprova indexação e limites, não a interpretação de todos os payloads internos.
+
+## Conteúdo e compressão
+
+O leitor entrega bytes armazenados sem extrair todos os arquivos para disco. A extração individual usa streaming. O envelope WESYS dos BINs é interpretado pelo módulo `Binary`: zlib quando o terceiro byte é `0x81` e payload direto para a variante sem compressão. Isso é compressão interna do BIN, distinta do campo `Codec` do CPK.
+
+CRILAYLA e codecs adicionais ainda não estão integrados ao leitor principal; CriFsV2Lib foi estudada como referência para uma futura camada de codec, sem assumir que seus callbacks de outro jogo sejam compatíveis com PES 2017.
+
+## Escrita experimental
+
+`ExperimentalCpkWriter` cria uma cópia do CPK e substitui um slot existente quando o novo conteúdo cabe no tamanho armazenado. A TOC, os demais slots e o arquivo original não são reescritos. O restante do slot é zerado e não é considerado conteúdo lógico depois do tamanho declarado no WESYS.
+
+Isso não é ainda uma reconstrução geral: não cria entradas, não recalcula TOC/ETOC/GTOC e não deve ser aplicado diretamente à instalação do usuário.
+
+## Fontes
+
+- Documentação local `cpks/md/dt10_win.md` e relatórios da Fase 22 do projeto pai;
+- código local `CpkArchiveReader`, `CriUtfTable` e `CriUtfCipher`;
+- CriPakTools, consultado em [esperknight/CriPakTools](https://github.com/esperknight/CriPakTools);
+- CriFsV2Lib, consultado em [Sewer56/CriFsV2Lib](https://github.com/Sewer56/CriFsV2Lib).
+
+Os arquivos originais e extrações proprietárias não são parte deste repositório.
