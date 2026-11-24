@@ -9,6 +9,8 @@
 - Uma release não encerra uma fase por si só; cada versão deve apresentar progresso funcional verificável.
 - Os arquivos originais do jogo devem permanecer preservados.
 - O usuário não deve precisar extrair, converter, reconstruir ou manipular CPKs/BINs manualmente.
+- Iniciar um processo não é evidência de inicialização aprovada: toda versão deve validar handle, visibilidade, dimensões e responsividade da MainWindow.
+- Toda falha de inicialização deve deixar evidência em logs e ser reproduzível pelo script `scripts/verify-startup.ps1` quando o ambiente permitir.
 
 ## Escopo e segurança
 

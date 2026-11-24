@@ -18,7 +18,7 @@
 ## Jogo
 
 - A precedência efetiva entre Data, download, Data Packs, patches, EDIT e saves ainda não foi comprovada de forma completa.
-- Não há confirmação visual dentro do jogo da edição v0.3.0.
+- Não há confirmação visual dentro do jogo da edição v0.3.1.
 - Não há modificação do `PES2017.exe`.
 
 ## Distribuição e segurança
@@ -26,7 +26,8 @@
 - `CpkMaker.DLL` não é distribuída por licença/procedência não verificadas.
 - Authenticode e assinatura de manifesto ainda não estão disponíveis; SHA-256 comprova integridade do arquivo recebido, não a identidade do publicador.
 - Os testes proprietários usam arquivos locais e não podem ser executados no CI público.
-- A instalação/desinstalação isolada da v0.3.0 foi testada; migração real sobre uma instalação anterior, atualização automática baixada e recuperação após falha ainda não foram executadas.
+- A instalação sobre v0.3.0 e a inicialização pelos atalhos foram testadas; atualização automática baixada e recuperação após falha ainda não foram executadas.
+- A validação visual da interface foi feita por Win32 `PrintWindow` e métricas da janela; uma sessão de automação WPF por UI Automation ainda não foi disponibilizada neste ambiente.
 
 ## Classificação
 

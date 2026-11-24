@@ -112,7 +112,7 @@
                                     <TextBlock Text="{Binding Status}" FontWeight="SemiBold" />
                                     <Button Grid.Column="1" Content="Cancelar" Command="{Binding CancelCommand}" HorizontalAlignment="Right" />
                                 </Grid>
-                                <ProgressBar Height="8" Margin="0,14,0,0" Minimum="0" Maximum="100" Value="{Binding Progress}" Foreground="{StaticResource PrimaryBrush}" Background="{StaticResource BorderBrush}" />
+                                <ProgressBar Height="8" Margin="0,14,0,0" Minimum="0" Maximum="100" Value="{Binding Progress, Mode=OneWay}" Foreground="{StaticResource PrimaryBrush}" Background="{StaticResource BorderBrush}" />
                             </StackPanel>
                         </Border>
 
@@ -153,6 +153,17 @@
                                     <ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="•  {Binding Message}" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,2" /></DataTemplate></ItemsControl.ItemTemplate>
                                 </ItemsControl>
                                 <TextBlock Text="Nenhuma contagem de jogadores, times, ligas ou competições é inventada: elas permanecem não identificadas até que os BINs correspondentes tenham parser comprovado." Foreground="{StaticResource MutedBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,12,0,0" />
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource CardStyle}" Margin="0,0,14,20">
+                            <StackPanel>
+                                <TextBlock Text="DIAGNÓSTICO DE INICIALIZAÇÃO" FontSize="11" Foreground="{StaticResource PrimaryBrush}" FontWeight="SemiBold" />
+                                <TextBlock Text="Os logs ajudam a investigar falhas de abertura sem alterar os dados do usuário." Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,8,0,8" />
+                                <TextBlock Text="{Binding StartupLogPathText}" TextWrapping="Wrap" FontFamily="Consolas" FontSize="11" />
+                                <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                                    <Button Content="Abrir pasta de logs" Command="{Binding OpenLogsCommand}" />
+                                    <Button Content="Copiar caminho" Command="{Binding CopyLogPathCommand}" />
+                                </StackPanel>
                             </StackPanel>
                         </Border>
                     </StackPanel>
@@ -283,7 +294,7 @@
                                 <TextBlock Text="ATUALIZAÇÕES" FontSize="11" Foreground="{StaticResource PrimaryBrush}" FontWeight="SemiBold" />
                                 <CheckBox Content="Verificar atualizações automaticamente ao iniciar" IsChecked="{Binding AutoCheckForUpdates}" Foreground="{StaticResource TextBrush}" Margin="0,14,0,12" />
                                 <TextBlock Text="{Binding UpdateStatus}" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />
-                                <ProgressBar Height="7" Minimum="0" Maximum="100" Value="{Binding UpdateProgress}" Foreground="{StaticResource PrimaryBrush}" Background="{StaticResource BorderBrush}" Margin="0,12,0,12" Visibility="{Binding IsUpdating, Converter={StaticResource BooleanVisibility}}" />
+                                <ProgressBar Height="7" Minimum="0" Maximum="100" Value="{Binding UpdateProgress, Mode=OneWay}" Foreground="{StaticResource PrimaryBrush}" Background="{StaticResource BorderBrush}" Margin="0,12,0,12" Visibility="{Binding IsUpdating, Converter={StaticResource BooleanVisibility}}" />
                                 <StackPanel Orientation="Horizontal">
                                     <Button Content="Verificar atualizações" Command="{Binding CheckUpdatesCommand}" />
                                     <Button Content="Atualizar agora" Command="{Binding UpdateNowCommand}" Style="{StaticResource PrimaryButton}" Visibility="{Binding IsUpdateAvailable, Converter={StaticResource BooleanVisibility}}" />

@@ -1,10 +1,10 @@
 # PES 2017 EDITOR — Estado do projeto
 
-Última atualização: 24/11/2026. Versão centralizada: `0.3.0`.
+Última atualização: 24/11/2026. Versão centralizada: `0.3.1`.
 
 ## Estado atual
 
-Fase 03 em implementação avançada. O núcleo lê os CPKs mascarados da instalação de referência, carrega jogadores, times, competições e associações reais e gera uma primeira cópia experimental com nome de jogador alterado. A versão ainda é experimental: não há confirmação dentro do jogo nem reconstrução geral de CPK.
+Hotfix Fase 03.1 implementado. O núcleo da Fase 03 permanece funcional e a inicialização WPF foi corrigida após diagnóstico real no Event Viewer. A versão ainda é experimental: não há confirmação dentro do jogo nem reconstrução geral de CPK.
 
 ## Funcionalidades implementadas e verificadas
 
@@ -22,6 +22,12 @@ Fase 03 em implementação avançada. O núcleo lê os CPKs mascarados da instal
 - backup SHA-256, reabertura, validação e preservação do CPK original;
 - correção da dependência transitiva SQLite vulnerável;
 - infraestrutura de distribuição v0.2.1 preservada.
+- inicialização WPF controlada sem `StartupUri`;
+- bindings de progresso explicitamente `OneWay`;
+- logs de startup, aplicação, crash e atualização;
+- modo `--safe-mode`;
+- validação de janela real por handle/visibilidade/responsividade;
+- upgrade da instalação v0.3.0 para v0.3.1 validado.
 
 ## Evidências
 
@@ -39,7 +45,7 @@ Fase 03 em implementação avançada. O núcleo lê os CPKs mascarados da instal
 - CRILAYLA e outros codecs ainda não integrados ao backend principal;
 - campos de atributos, ligas, competições, aparências e táticas;
 - diagnóstico relacional completo e inspetor diferencial de registros;
-- testes isolados de instalação/atualização para a nova versão;
+- atualização automática baixada ainda não validada em cenário real;
 - Authenticode e assinatura de manifesto.
 
 ## Decisões arquiteturais
@@ -60,13 +66,15 @@ O leitor CPK resolve detalhes de contêiner; o módulo Binary resolve WESYS; Dat
 ## Últimos resultados
 
 - Build Debug: 0 avisos, 0 erros.
-- Testes completos: 16 aprovados, 0 reprovados, 0 ignorados.
+- Testes completos: 18 aprovados, 0 reprovados, 0 ignorados.
 - Testes públicos: 8 aprovados.
 - Testes proprietários: 8 aprovados.
 - Release estável anterior: `v0.2.1`, [GitHub](https://github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.2.1).
 - Publicação v0.3.0: pré-release experimental confirmada no GitHub; `v0.2.1` continua sendo a última release estável.
 - Artefatos remotos confirmados: instalador, portátil, `SHA256SUMS.txt`, `update-manifest.json` e código-fonte automático ZIP/TAR.GZ.
 - CI do commit `a7b7ce0` e workflow de release `45503904505`: aprovados.
+- Diagnóstico da v0.3.0: `.NET Runtime 1026`, binding TwoWay em `Progress`, código `0xe0434352`.
+- v0.3.1 local: executável, atalhos e `--safe-mode` com janela 1440×900 responsiva.
 
 ## Próximo passo seguro
 

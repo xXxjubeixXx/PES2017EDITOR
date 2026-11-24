@@ -1,6 +1,29 @@
-# PES 2017 EDITOR — Resultados de testes da Fase 03
+# PES 2017 EDITOR — Resultados de testes da Fase 03.1
 
-Data: 24/11/2026.
+Data: 24/11/2026. Versão: `0.3.1`.
+
+## Hotfix de inicialização
+
+- v0.3.0 instalada: falha reproduzida pelo atalho, com `.NET Runtime 1026`, `Application Error 1000` e `0xe0434352`;
+- causa: binding implícito TwoWay em propriedades somente leitura `Progress` e `UpdateProgress`;
+- v0.3.1: bindings corrigidos para OneWay;
+- `MainWindow` criada explicitamente em `App.OnStartup`;
+- logs e modo `--safe-mode`: aprovados;
+- executável instalado: handle, visibilidade, dimensões e responsividade aprovados;
+- atalho Desktop público: aprovado;
+- atalho Menu Iniciar comum: aprovado;
+- upgrade v0.3.0 → v0.3.1: código 0 e registro Windows atualizado.
+
+## Validação real da janela
+
+```text
+Executable: C:\Program Files\PES 2017 Database Editor\PES2017DatabaseEditor.exe
+Title: PES 2017 Database Editor
+Visible: True
+Minimized: False
+Responding: True
+Size: 1440x900
+```
 
 ## Execuções
 
@@ -9,7 +32,7 @@ dotnet build PES2017Editor.sln --no-restore
 Compilação: aprovada; 0 avisos; 0 erros
 
 dotnet test PES2017Editor.sln --no-build
-Total: 16; aprovados: 16; reprovados: 0; ignorados: 0
+Total: 18; aprovados: 18; reprovados: 0; ignorados: 0
 
 dotnet test PES2017Editor.sln --no-build --filter Category!=Proprietary
 Total: 8; aprovados: 8; reprovados: 0; ignorados: 0
@@ -42,7 +65,8 @@ O CPK `dt20_bra_win.cpk` foi extraído com a ferramenta x86 local `CpkMaker.DLL`
 - validação visual no jogo: não executada;
 - reconstrução completa de CPK e criação de novas entradas: não implementada;
 - round-trip de todos os codecs CRILAYLA/WESYS encontrados: não executado;
-- instalação limpa, desinstalação e atualização da v0.3.0: não executados nesta fase;
+- atualização automática baixada pela aplicação: não executada;
+- fallback após falha de instalação: não executado;
 - testes de precedência real e arquivo efetivamente consumido pelo jogo: desconhecidos;
 - Authenticode: não configurado.
 

@@ -74,11 +74,12 @@ if (-not (Get-Command gh -ErrorAction SilentlyContinue)) { throw "GitHub CLI nã
 gh auth status
 if ($LASTEXITCODE -ne 0) { throw "Autenticação GitHub indisponível." }
 if ($Publish) {
+    $notesFile = if ($version -eq "0.3.1") { Join-Path $projectRoot "docs/PHASE_03_1_HOTFIX_REPORT.md" } else { Join-Path $projectRoot "docs/PHASE_03_REPORT.md" }
     $releaseArguments = @(
         "release", "create", $tag, $installer, $portable, $hashFile, $manifestPath,
         "--repo", "xXxjubeixXx/PES2017EDITOR",
         "--title", "PES 2017 Database Editor $tag",
-        "--notes-file", (Join-Path $projectRoot "docs/PHASE_03_REPORT.md")
+        "--notes-file", $notesFile
     )
     if ($Channel -eq "experimental") { $releaseArguments += "--prerelease" }
     & gh @releaseArguments

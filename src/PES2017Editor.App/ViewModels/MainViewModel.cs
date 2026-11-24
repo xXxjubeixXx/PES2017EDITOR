@@ -49,9 +49,11 @@ public sealed class MainViewModel : NotifyPropertyChanged
     private PesPlayerRow? _selectedPlayer;
     private string _databaseStatus = "Os BINs de jogadores, times e competições ainda não foram carregados.";
     private string _experimentalStatus = "Nenhuma edição experimental foi gerada.";
+    private readonly bool _safeMode;
 
-    public MainViewModel()
+    public MainViewModel(bool safeMode = false)
     {
+        _safeMode = safeMode;
         BrowseCommand = new AsyncCommand(BrowseAsync);
         LoadCommand = new AsyncCommand(LoadAsync, () => !IsLoading && !string.IsNullOrWhiteSpace(SelectedPath));
         CancelCommand = new RelayCommand(_ => Cancel(), _ => IsLoading);
@@ -61,6 +63,8 @@ public sealed class MainViewModel : NotifyPropertyChanged
         CheckUpdatesCommand = new AsyncCommand(() => CheckForUpdatesAsync(automatic: false), () => !IsCheckingUpdates && !IsUpdating);
         UpdateNowCommand = new AsyncCommand(DownloadAndLaunchUpdateAsync, () => IsUpdateAvailable && !IsUpdating && !IsCheckingUpdates);
         OpenRepositoryCommand = new RelayCommand(parameter => OpenUrl(parameter));
+        OpenLogsCommand = new RelayCommand(_ => OpenLogs());
+        CopyLogPathCommand = new RelayCommand(_ => CopyLogPath());
         Navigation = new ObservableCollection<NavigationItem>([
             new("Visão geral", "⌂"), new("Jogadores", "⚽"), new("Times", "▣"), new("Ligas", "◈"),
             new("Competições", "◇"), new("Seleções nacionais", "◎"), new("Estádios", "▤"),
@@ -91,6 +95,8 @@ public sealed class MainViewModel : NotifyPropertyChanged
     public ICommand CheckUpdatesCommand { get; }
     public ICommand UpdateNowCommand { get; }
     public ICommand OpenRepositoryCommand { get; }
+    public ICommand OpenLogsCommand { get; }
+    public ICommand CopyLogPathCommand { get; }
 
     public string SelectedPath
     {
@@ -168,6 +174,7 @@ public sealed class MainViewModel : NotifyPropertyChanged
     public CpkEntryRow? SelectedEntry { get; set; }
     public string AppVersionText => $"v{AppMetadata.Version}";
     public string BuildInformationText => $"{AppMetadata.Architecture} · compilado em {AppMetadata.BuildDate}";
+    public string StartupLogPathText => EditorLogger.Default.StartupLogPath;
     public string UpdateStatus { get => _updateStatus; private set => Set(ref _updateStatus, value); }
     public bool IsUpdateAvailable => _availableUpdate is not null;
     public string LatestVersionText => _availableUpdate is null ? "Não identificada" : $"v{_availableUpdate.Version}";
@@ -192,6 +199,12 @@ public sealed class MainViewModel : NotifyPropertyChanged
 
     public async Task InitializeAsync()
     {
+        if (_safeMode)
+        {
+            Status = "Modo seguro ativo — configurações, cache e atualização automática foram ignorados.";
+            EditorLogger.Default.WriteStartup("Modo seguro ativo; serviços persistentes ignorados.");
+            return;
+        }
         _settings = await _settingsStore.LoadAsync();
         _autoCheckForUpdates = _settings.AutoCheckForUpdates;
         OnPropertyChanged(nameof(AutoCheckForUpdates));
@@ -202,6 +215,22 @@ public sealed class MainViewModel : NotifyPropertyChanged
         if (_settings.AutoCheckForUpdates &&
             (!_settings.LastUpdateCheckUtc.HasValue || DateTimeOffset.UtcNow - _settings.LastUpdateCheckUtc.Value >= TimeSpan.FromHours(Math.Max(1, _settings.UpdateCheckIntervalHours))))
             _ = CheckForUpdatesAsync(automatic: true);
+    }
+
+    private void OpenLogs()
+    {
+        try
+        {
+            Directory.CreateDirectory(AppDataPaths.LogsDirectory);
+            Process.Start(new ProcessStartInfo("explorer.exe", $"\"{AppDataPaths.LogsDirectory}\"") { UseShellExecute = true });
+        }
+        catch (Exception exception) { EditorLogger.Default.WriteApplication("Não foi possível abrir a pasta de logs.", exception); }
+    }
+
+    private void CopyLogPath()
+    {
+        try { System.Windows.Clipboard.SetText(EditorLogger.Default.StartupLogPath); }
+        catch (Exception exception) { EditorLogger.Default.WriteApplication("Não foi possível copiar o caminho do log.", exception); }
     }
 
     private Task BrowseAsync()

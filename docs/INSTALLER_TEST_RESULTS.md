@@ -2,6 +2,18 @@
 
 Data: 24/11/2026.
 
+## Hotfix v0.3.1
+
+- instalador compilado com Inno Setup 6.7.3;
+- instalação sobre a v0.3.0: código 0;
+- registro Windows atualizado para `0.3.1`;
+- executável instalado iniciou diretamente;
+- atalho Desktop público iniciou a janela;
+- atalho Menu Iniciar comum iniciou a janela;
+- `--safe-mode` iniciou a janela;
+- janela validada como visível, não minimizada, responsiva e 1440×900;
+- screenshot real capturado via `PrintWindow`.
+
 ## Instalação isolada
 
 - instalador Inno Setup 6.7.3 compilado com sucesso;

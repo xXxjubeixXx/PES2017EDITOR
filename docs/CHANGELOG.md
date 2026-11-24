@@ -1,5 +1,16 @@
 # PES 2017 EDITOR — Changelog
 
+## 0.3.1 — Fase 03.1, hotfix de inicialização
+
+- corrigido binding TwoWay implícito em `Progress` e `UpdateProgress`;
+- removido `StartupUri` e criada inicialização controlada da `MainWindow`;
+- adicionados `startup.log`, `application.log`, `crash.log` e `update.log`;
+- adicionada captura de exceções WPF/.NET e mensagem de falha compreensível;
+- adicionado `--safe-mode`;
+- adicionado `scripts/verify-startup.ps1`;
+- validada a instalação v0.3.0 atualizada para v0.3.1, incluindo os dois atalhos;
+- 18 testes automatizados aprovados.
+
 ## 0.3.0 — Fase 03, motor de dados experimental
 
 - Decodificação interna de TOCs CRI UTF mascaradas com a transformação `DecryptUTF` documentada.

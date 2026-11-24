@@ -2,18 +2,40 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using PES2017Editor.App.ViewModels;
+using PES2017Editor.Infrastructure;
 
 namespace PES2017Editor.App;
 
 public partial class MainWindow : Window
 {
-    private readonly MainViewModel _viewModel = new();
+    private readonly MainViewModel _viewModel;
 
-    public MainWindow()
+    public MainWindow(bool safeMode = false)
     {
+        _viewModel = new MainViewModel(safeMode);
         InitializeComponent();
         DataContext = _viewModel;
-        Loaded += async (_, _) => await _viewModel.InitializeAsync();
+        Loaded += OnLoaded;
+        Closed += (_, _) => EditorLogger.Default.WriteApplication("MainWindow fechada; encerramento normal.");
+    }
+
+    private async void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            EditorLogger.Default.WriteStartup("MainWindow carregada; inicializando serviços secundários.");
+            await _viewModel.InitializeAsync();
+            EditorLogger.Default.WriteStartup("Inicialização concluída; interface responsiva.");
+        }
+        catch (Exception exception)
+        {
+            EditorLogger.Default.WriteCrash("Falha durante a inicialização assíncrona da MainWindow.", exception);
+            System.Windows.MessageBox.Show(
+                $"O aplicativo abriu, mas não conseguiu inicializar todos os serviços.\n\nLog: {EditorLogger.Default.CrashLogPath}",
+                "PES 2017 Editor",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+        }
     }
 }
 

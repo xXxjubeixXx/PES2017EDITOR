@@ -8,11 +8,13 @@ Editor desktop independente para inspeção e edição experimental dos dados do
 
 ## Estado da versão
 
-`0.3.0` — Fase 03: motor CPK/BIN e primeira edição experimental.
+`0.3.1` — Fase 03.1: hotfix de inicialização e diagnóstico WPF.
 
 A versão estável publicada anterior é [`v0.2.1`](https://github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.2.1). A v0.3.0 permanece experimental até a validação visual dentro do jogo e a reconstrução geral de CPK serem concluídas.
 
 Os artefatos da pré-release estão disponíveis em [`v0.3.0`](https://github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.3.0). O atualizador automático continua priorizando releases estáveis.
+
+A v0.3.1 corrige a falha que impedia a janela da v0.3.0 de abrir, adiciona logs em `%LOCALAPPDATA%\PES2017EDITOR\logs` e oferece `--safe-mode` para inicialização controlada.
 
 ## Funcionalidades verificadas
 
@@ -31,6 +33,8 @@ Os artefatos da pré-release estão disponíveis em [`v0.3.0`](https://github.co
 - explorador CPK, pesquisa, virtualização e extração individual;
 - interface WPF/MVVM em português brasileiro, tema escuro e navegação modular;
 - verificação e atualização por releases GitHub, herdadas da Fase 02.
+- inicialização WPF validada por handle, visibilidade, dimensões e responsividade;
+- modo de diagnóstico `--safe-mode` e logs de startup/crash.
 
 ## Limites explícitos
 
@@ -67,6 +71,9 @@ O código é separado em `Core`, `Cpk`, `Binary`, `Database`, `Game`, `Infrastru
 ## Documentação
 
 - [`docs/PHASE_03_REPORT.md`](docs/PHASE_03_REPORT.md)
+- [`docs/PHASE_03_1_HOTFIX_REPORT.md`](docs/PHASE_03_1_HOTFIX_REPORT.md)
+- [`docs/STARTUP_DIAGNOSTICS.md`](docs/STARTUP_DIAGNOSTICS.md)
+- [`docs/CRASH_LOGGING.md`](docs/CRASH_LOGGING.md)
 - [`docs/CPK_FORMAT.md`](docs/CPK_FORMAT.md)
 - [`docs/BINARY_FORMATS.md`](docs/BINARY_FORMATS.md)
 - [`docs/GAME_DATABASE.md`](docs/GAME_DATABASE.md)
