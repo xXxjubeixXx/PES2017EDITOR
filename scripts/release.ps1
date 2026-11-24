@@ -2,7 +2,8 @@
 param(
     [switch]$PrepareOnly,
     [switch]$Publish,
-    [switch]$SkipTests
+    [switch]$SkipTests,
+    [switch]$PublicOnly
 )
 
 $ErrorActionPreference = "Stop"
@@ -11,13 +12,17 @@ $props = Get-Content -Raw (Join-Path $projectRoot "Directory.Build.props")
 $version = [regex]::Match($props, '<VersionPrefix>([^<]+)</VersionPrefix>').Groups[1].Value
 if ([string]::IsNullOrWhiteSpace($version)) { throw "VersionPrefix não encontrado." }
 $tag = "v$version"
-if ($env:GITHUB_REF_NAME -and $env:GITHUB_REF_NAME -ne $tag) { throw "A tag $env:GITHUB_REF_NAME não corresponde à versão centralizada $tag." }
+if ($env:GITHUB_EVENT_NAME -eq "push" -and $env:GITHUB_REF_NAME -and $env:GITHUB_REF_NAME -ne $tag) { throw "A tag $env:GITHUB_REF_NAME não corresponde à versão centralizada $tag." }
 $releaseRoot = Join-Path $projectRoot "artifacts/release/$version"
 $installer = Join-Path $projectRoot "artifacts/installer/PES2017DatabaseEditor-Setup-v$version-win-x64.exe"
 $portable = Join-Path $releaseRoot "PES2017DatabaseEditor-Portable-v$version-win-x64.zip"
 $publishRoot = Join-Path $projectRoot "artifacts/installer-payload"
 
-if (-not $SkipTests) { & (Join-Path $PSScriptRoot "test.ps1") }
+if (-not $SkipTests) {
+    $testArguments = @{}
+    if ($PublicOnly) { $testArguments.PublicOnly = $true }
+    & (Join-Path $PSScriptRoot "test.ps1") @testArguments
+}
 & (Join-Path $PSScriptRoot "publish.ps1") -OutputDirectory "artifacts/installer-payload"
 & (Join-Path $PSScriptRoot "build-installer.ps1") -SkipPublish
 if (Test-Path -LiteralPath $releaseRoot) { Remove-Item -LiteralPath $releaseRoot -Recurse -Force }

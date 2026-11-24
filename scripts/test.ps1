@@ -1,5 +1,8 @@
 [CmdletBinding()]
-param([string]$Configuration = "Release")
+param(
+    [string]$Configuration = "Release",
+    [switch]$PublicOnly
+)
 
 $ErrorActionPreference = "Stop"
 $projectRoot = Split-Path -Parent $PSScriptRoot
@@ -10,6 +13,8 @@ $solution = Join-Path $projectRoot "PES2017Editor.sln"
 
 & $dotnet restore $solution --nologo
 if ($LASTEXITCODE -ne 0) { throw "Restore para testes falhou." }
-& $dotnet test $solution -c $Configuration --no-restore --nologo --logger "console;verbosity=normal"
+$testArguments = @($solution, "-c", $Configuration, "--no-restore", "--nologo", "--logger", "console;verbosity=normal")
+if ($PublicOnly) { $testArguments += @("--filter", "Category!=Proprietary") }
+& $dotnet test @testArguments
 if ($LASTEXITCODE -ne 0) { throw "Testes falharam." }
 

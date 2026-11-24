@@ -24,7 +24,7 @@ jobs:
       - name: Build Release
         run: dotnet build .\PES2017Editor.sln -c Release --no-restore --nologo
       - name: Testes automatizados
-        run: dotnet test .\PES2017Editor.sln -c Release --no-restore --nologo --logger "trx;LogFileName=tests.trx"
+        run: dotnet test .\PES2017Editor.sln -c Release --no-restore --nologo --filter "Category!=Proprietary" --logger "trx;LogFileName=tests.trx"
       - name: Auditoria de vulnerabilidades NuGet
         continue-on-error: true
         run: dotnet list .\PES2017Editor.sln package --vulnerable --include-transitive

@@ -2,13 +2,15 @@
 
 Última atualização: 24/11/2026.
 
-Última execução registrada após a implementação da Fase 01:
+Última execução registrada após a implementação da Fase 02:
 
 ```text
 dotnet test PES2017Editor.sln -c Release --logger "console;verbosity=normal"
 Resultado: aprovado
 Testes: 9 passed, 0 failed
 ```
+
+No GitHub Actions, os testes públicos foram executados separadamente com `--filter "Category!=Proprietary"`: 4 passed, 0 failed. Os 5 testes `Proprietary` exigem a instalação original local e passaram na execução local acima.
 
 Cobertura funcional dos testes:
 

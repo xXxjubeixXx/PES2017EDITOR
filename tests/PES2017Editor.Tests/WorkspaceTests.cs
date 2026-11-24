@@ -10,6 +10,7 @@ namespace PES2017Editor.Tests;
 public sealed class WorkspaceTests
 {
     [Fact]
+    [Trait("Category", "Proprietary")]
     public async Task ReadsNativeCpkHeaderAndTocFromRealDt10()
     {
         var path = FindWorkspaceFile("originals/Pro Evolution Soccer 2017/Data/dt10_win.cpk");
@@ -22,6 +23,7 @@ public sealed class WorkspaceTests
     }
 
     [Fact]
+    [Trait("Category", "Proprietary")]
     public async Task ExtractsOneEntryWithoutChangingTheCpk()
     {
         var path = FindWorkspaceFile("originals/Pro Evolution Soccer 2017/Data/dt10_win.cpk");
@@ -34,6 +36,7 @@ public sealed class WorkspaceTests
     }
 
     [Fact]
+    [Trait("Category", "Proprietary")]
     public async Task IndexesAllRealInstallationCpksWithoutExtractingThem()
     {
         var executable = FindWorkspaceFile("originals/Pro Evolution Soccer 2017/PES2017.exe");
@@ -47,6 +50,7 @@ public sealed class WorkspaceTests
     }
 
     [Fact]
+    [Trait("Category", "Proprietary")]
     public async Task DetectsInstallationWithoutAssumingDatabaseCounts()
     {
         var executable = FindWorkspaceFile("originals/Pro Evolution Soccer 2017/PES2017.exe");
@@ -69,6 +73,7 @@ public sealed class WorkspaceTests
     }
 
     [Fact]
+    [Trait("Category", "Proprietary")]
     public async Task PersistsIndexInLocalSqliteCache()
     {
         var path = FindWorkspaceFile("originals/Pro Evolution Soccer 2017/Data/dt10_win.cpk");
@@ -98,6 +103,6 @@ public sealed class WorkspaceTests
             if (File.Exists(candidate)) return candidate;
             current = current.Parent;
         }
-        throw Xunit.Sdk.SkipException.ForSkip($"Fixture proprietário não disponível no ambiente público: {relative}");
+        throw new FileNotFoundException($"Fixture proprietário não disponível: {relative}");
     }
 }
