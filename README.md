@@ -10,9 +10,9 @@ Editor desktop independente para inspeção e edição experimental dos dados do
 
 `0.3.1` — Fase 03.1: hotfix de inicialização e diagnóstico WPF.
 
-A versão estável publicada anterior é [`v0.2.1`](https://github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.2.1). A v0.3.0 permanece experimental até a validação visual dentro do jogo e a reconstrução geral de CPK serem concluídas.
+A versão estável publicada anterior é [`v0.2.1`](https://github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.2.1). As versões v0.3.0 e v0.3.1 permanecem experimentais até a validação visual dentro do jogo e a reconstrução geral de CPK serem concluídas.
 
-Os artefatos da pré-release estão disponíveis em [`v0.3.0`](https://github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.3.0). O atualizador automático continua priorizando releases estáveis.
+Os artefatos da pré-release atual estão disponíveis em [`v0.3.1`](https://github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.3.1). O atualizador automático continua priorizando releases estáveis; usuários da v0.3.0 devem atualizar manualmente pelo instalador da v0.3.1.
 
 A v0.3.1 corrige a falha que impedia a janela da v0.3.0 de abrir, adiciona logs em `%LOCALAPPDATA%\PES2017EDITOR\logs` e oferece `--safe-mode` para inicialização controlada.
 

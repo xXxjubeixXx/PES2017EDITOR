@@ -42,3 +42,14 @@ Artefatos publicados e confirmados:
 
 Ainda não foi testada uma migração sobre uma instalação produtiva anterior nem uma atualização real baixada de uma release pública; esses cenários exigem uma release de teste/controlada e estão descritos como próximos testes.
 
+## Artefatos v0.3.1 publicados
+
+- pré-release experimental publicada pelo workflow oficial;
+- instalador: 68.269.607 bytes, SHA-256 `5a7541aeb2240e6a8776ebaa36bb7c57d9cee32376c386dbdb27079adfbaabc0`;
+- portátil: 95.245.538 bytes, SHA-256 `302ae0f46daab2433b814a8eb1d2757fa27659938642d34f0aaca922761018e7`;
+- portátil baixado da release, extraído e validado com handle de janela, visibilidade, dimensões 1440×900 e responsividade;
+- `SHA256SUMS.txt`: 231 bytes; `update-manifest.json`: 973 bytes;
+- URL: `https://github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.3.1`.
+
+O teste de atualização automática ainda não foi executado; a atualização manual pela release foi validada baixando e iniciando o portátil publicado.
+

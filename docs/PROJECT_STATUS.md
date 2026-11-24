@@ -75,6 +75,8 @@ O leitor CPK resolve detalhes de contêiner; o módulo Binary resolve WESYS; Dat
 - CI do commit `a7b7ce0` e workflow de release `45503904505`: aprovados.
 - Diagnóstico da v0.3.0: `.NET Runtime 1026`, binding TwoWay em `Progress`, código `0xe0434352`.
 - v0.3.1 local: executável, atalhos e `--safe-mode` com janela 1440×900 responsiva.
+- v0.3.1 remoto: pré-release experimental publicada; portátil baixado, hash `302ae0f46daab2433b814a8eb1d2757fa27659938642d34f0aaca922761018e7` validado e janela real aprovada.
+- Release v0.3.1: [GitHub](https://github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.3.1); instalador `68.269.607` bytes; portátil `95.245.538` bytes.
 
 ## Próximo passo seguro
 

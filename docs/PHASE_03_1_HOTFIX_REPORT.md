@@ -35,7 +35,7 @@ Após a primeira correção, a publicação local revelou a mesma falha em `Upda
 | Instalado | falha antes da janela | janela visível e responsiva |
 | Atalho Desktop | falha | aprovado |
 | Atalho Menu Iniciar | falha | aprovado |
-| Portátil GitHub | encerra com `-532462766` | aguardando release v0.3.1 |
+| Portátil GitHub | encerra com `-532462766` | janela visível e responsiva |
 | Build local publicado | não validado visualmente | handle válido, 1440×900 |
 | `--safe-mode` | inexistente | handle válido, 1440×900 |
 
@@ -59,6 +59,19 @@ Validação da instalação atualizada:
 - Atalho Desktop e Menu Iniciar: aprovados.
 - Modo seguro: aprovado.
 - Instalação sobre v0.3.0: código 0, versão registrada `0.3.1`.
+- Portátil publicado pelo GitHub Actions: hash validado, janela visível e responsiva em 1440×900.
+
+## Publicação
+
+- Commit da correção: `edfacd8cfe3fc588cd23227ec093b2e09208bd91`.
+- Tag: `v0.3.1`.
+- Canal: pré-release experimental.
+- CI: [45510140659](https://github.com/xXxjubeixXx/PES2017EDITOR/actions/runs/45510140659), aprovado.
+- Release: [PES 2017 Database Editor v0.3.1](https://github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.3.1).
+- Instalador publicado: 68.269.607 bytes, SHA-256 `5a7541aeb2240e6a8776ebaa36bb7c57d9cee32376c386dbdb27079adfbaabc0`.
+- Portátil publicado: 95.245.538 bytes, SHA-256 `302ae0f46daab2433b814a8eb1d2757fa27659938642d34f0aaca922761018e7`.
+- `SHA256SUMS.txt`: 231 bytes; `update-manifest.json`: 973 bytes.
+- Código-fonte automático: [ZIP](https://github.com/xXxjubeixXx/PES2017EDITOR/archive/refs/tags/v0.3.1.zip) e [TAR.GZ](https://github.com/xXxjubeixXx/PES2017EDITOR/archive/refs/tags/v0.3.1.tar.gz).
 
 ## Pendências
 
