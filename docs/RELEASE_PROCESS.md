@@ -39,5 +39,6 @@ O workflow `release.yml` automatiza a etapa após uma tag compatível. Antes do 
 gh api repos/xXxjubeixXx/PES2017EDITOR/commits/main --jq .sha
 gh release view v0.2.0 --repo xXxjubeixXx/PES2017EDITOR
 gh release view v0.2.0 --repo xXxjubeixXx/PES2017EDITOR --json assets,tagName,url
+pwsh .\scripts\verify-release.ps1
 ```
 
