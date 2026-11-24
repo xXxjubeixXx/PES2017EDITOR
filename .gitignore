@@ -12,7 +12,10 @@ artifacts/release/
 artifacts/*.log
 **/bin/
 **/obj/
-**/*.cpk
+**/*.[cC][pP][kK]
+!src/PES2017Editor.Cpk/
+!src/PES2017Editor.Cpk/*.cs
+!src/PES2017Editor.Cpk/*.csproj
 **/PES2017.exe
 **/EDIT00000000*
 .env
