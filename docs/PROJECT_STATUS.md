@@ -37,10 +37,10 @@ Fase 01 implementada e Fase 02 implementada para distribuição. A solução com
 - instalação, atalhos, execução e desinstalação isoladas aprovadas;
 - serviço de atualização e manifesto implementados;
 - workflows `ci.yml` e `release.yml` criados;
-- tag/release `v0.2.0` publicada e confirmada remotamente;
-- correção `v0.2.1` preparada para publicação sem reescrever `v0.2.0`;
+- tag/release `v0.2.0` preservada e confirmada remotamente;
+- tag/release `v0.2.1` publicada e confirmada remotamente;
 - commit da implementação publicado: `1df85a4f13a008da9f363c345f4c630809508a8c`;
-- release: https://github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.2.0;
+- release principal: https://github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.2.1;
 - branch de backup: `archive/pre-phase-02-20261124` → `7eef9445fd4177963a1c996b0cf0a1997e8dcff2`.
 
 Executável publicado: `artifacts/publish/win-x64/PES2017DatabaseEditor.exe` (self-contained, win-x64, SHA-256 `BD40784B0948057610D451025BE0A6A67A05882E1E291608A0B8744F263B36D9`).

@@ -1,6 +1,6 @@
 # Relatório da Fase 02
 
-Após a publicação inicial, a correção `v0.2.1` foi preparada para incluir o projeto CPK que havia sido ocultado por um padrão excessivo do `.gitignore`. A `v0.2.0` foi preservada sem force-push; a `v0.2.1` passa a ser a versão recomendada.
+Após a publicação inicial, a correção `v0.2.1` foi publicada para incluir o projeto CPK que havia sido ocultado por um padrão excessivo do `.gitignore`. A `v0.2.0` foi preservada sem force-push; a `v0.2.1` é a versão recomendada.
 
 ## Estado
 
@@ -10,11 +10,11 @@ Implementação concluída para versionamento, distribuição Windows, instalado
 
 O remoto verificado é `https://github.com/xXxjubeixXx/PES2017EDITOR`, público, branch principal `main`. A autenticação GitHub CLI está disponível. O conteúdo anterior estava no commit `7eef9445fd4177963a1c996b0cf0a1997e8dcff2` e foi preservado na branch remota `archive/pre-phase-02-20261124` antes da substituição.
 
-O commit publicado da implementação é `1df85a4f13a008da9f363c345f4c630809508a8c`, com o commit antigo como pai. A tag `v0.2.0` e a release oficial estão disponíveis em [github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.2.0](https://github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.2.0).
+O commit publicado da implementação é `1df85a4f13a008da9f363c345f4c630809508a8c`, com o commit antigo como pai. A correção está no commit `72a7d90fcc1716de77908f9c31003b5086c7cc28`, tag `v0.2.1`, disponível em [github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.2.1](https://github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.2.1).
 
 ## Implementação
 
-- SemVer centralizado em `Directory.Build.props` com versão `0.2.0`;
+- SemVer centralizado em `Directory.Build.props` com versão `0.2.1`;
 - versão sincronizada no assembly, UI, User-Agent, instalador, nomes de artefatos e scripts;
 - ícone original em SVG, PNG e ICO, sem logotipo Konami;
 - instalador Inno Setup em português brasileiro;
@@ -30,7 +30,7 @@ O commit publicado da implementação é `1df85a4f13a008da9f363c345f4c630809508a
 
 Build e testes locais foram executados após a implementação. A solução e os testes dependem da mesma instalação real usada na Fase 01; no CI público, fixtures proprietárias ausentes são ignoradas explicitamente. O instalador foi instalado em diretório temporário, executado, teve seus atalhos conferidos e foi desinstalado com log.
 
-O teste automatizado atual tem 9 casos aprovados. O instalador `PES2017DatabaseEditor-Setup-v0.2.0-win-x64.exe` tem 68.180.065 bytes e SHA-256 `1BC8158240C551567AA4FB7588D09EF386E03410E26346AB8FFFBE180B01B6CA`. O ZIP portátil tem 95.091.817 bytes e SHA-256 `7B9BCDD11DFD6AA6FCA669B1C67C010E5AE96C27294D849AE439758F757C472E`. Esses valores também estão em `artifacts/release/0.2.0`.
+O teste automatizado local tem 9 casos aprovados e o CI público tem 4 casos públicos aprovados. Na release `v0.2.1`, o instalador tem 68.188.344 bytes e SHA-256 `6CB3F506ECA85265D71C079593CC374B1A1B7B0AA8B04C914D13C82521ED42EB`; o ZIP portátil tem 95.092.388 bytes e SHA-256 `0DD0D36E78F10A2413B1E105840C8187B0190CB356850FBE01C4A1B9AC2B4B8C`. Esses valores estão no manifesto e em `SHA256SUMS.txt` da release.
 
 ## Segurança e limitações
 
