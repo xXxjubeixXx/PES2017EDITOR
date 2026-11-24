@@ -84,7 +84,16 @@ Foram consultadas as implementações públicas CriPakTools, CriFsV2Lib, pes-fil
 
 ## Artefatos e publicação
 
-A infraestrutura de distribuição da Fase 02 foi mantida. Antes da publicação, o pipeline deve executar build Release, testes, publish self-contained, Inno Setup, ZIP portátil, hashes e inspeção do staging. Como a validação in-game não foi executada nesta sessão, uma release estável `v0.3.0` não deve ser declarada como funcionalidade completa; o processo de publicação deve usar uma pré-release experimental se os critérios de distribuição forem executados sem bloqueio.
+A infraestrutura de distribuição da Fase 02 foi mantida. O pipeline executou build Release, testes, publish self-contained, Inno Setup, ZIP portátil, hashes e inspeção do staging. Como a validação in-game não foi executada nesta sessão, `v0.3.0` foi publicada corretamente como pré-release experimental; `v0.2.1` continua sendo a última versão estável. A publicação foi confirmada em `https://github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.3.0`, com commit `a7b7ce0aeb0ce1ece8165dcb37da49e50e356fa1`, tag anotada `v0.3.0` e workflow de release aprovado.
+
+Artefatos remotos confirmados:
+
+- instalador: `PES2017DatabaseEditor-Setup-v0.3.0-win-x64.exe`, 68.269.512 bytes, SHA-256 `17f717aaca26fba72cc24b50e0a27010b33a93c97ccc0f898acaafc8749e8052`;
+- portátil: `PES2017DatabaseEditor-Portable-v0.3.0-win-x64.zip`, 95.229.984 bytes, SHA-256 `8ea5998bc7a6e64f1a73e8fb694517428d435f283b8deeb2c2725f1715b6632d`;
+- `SHA256SUMS.txt` e `update-manifest.json`: presentes e conferidos pela API/endpoint de download;
+- o GitHub disponibiliza os arquivos padrão Source code (ZIP) e Source code (TAR.GZ) para a tag.
+
+Teste real do instalador em diretório isolado: instalação código 0, executável iniciado, desinstalação código 0, atalho no Desktop público e Menu Iniciar comum, remoção dos atalhos e diretório confirmada. Migração real sobre uma instalação anterior e atualização automática baixada ainda não foram executadas.
 
 ## Próximas etapas
 

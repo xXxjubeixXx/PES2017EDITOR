@@ -64,8 +64,10 @@ O leitor CPK resolve detalhes de contêiner; o módulo Binary resolve WESYS; Dat
 - Testes públicos: 8 aprovados.
 - Testes proprietários: 8 aprovados.
 - Release estável anterior: `v0.2.1`, [GitHub](https://github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.2.1).
-- Publicação v0.3.0: ainda não confirmada; não declarar release até os artefatos e a validação correspondente existirem.
+- Publicação v0.3.0: pré-release experimental confirmada no GitHub; `v0.2.1` continua sendo a última release estável.
+- Artefatos remotos confirmados: instalador, portátil, `SHA256SUMS.txt`, `update-manifest.json` e código-fonte automático ZIP/TAR.GZ.
+- CI do commit `a7b7ce0` e workflow de release `45503904505`: aprovados.
 
 ## Próximo passo seguro
 
-Executar a edição de um jogador em cópia isolada do jogo, registrar CPK/BIN/ID/nome/hashes e só então decidir entre pré-release experimental e release estável.
+Executar a edição de um jogador em cópia isolada do jogo, registrar CPK/BIN/ID/nome/hashes e decidir quando a validação in-game permitirá promover a versão experimental a release estável.

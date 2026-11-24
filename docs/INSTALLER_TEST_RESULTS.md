@@ -16,15 +16,17 @@ Data: 24/11/2026.
 - log confirmou remoção dos arquivos, atalhos, registro e diretório de instalação;
 - `%LOCALAPPDATA%\PES2017EDITOR` não foi incluído no diretório de instalação e não é removido pelo script Inno.
 
-## Artefatos locais observados
+## Artefatos v0.3.0 publicados
 
-O instalador `v0.2.1` foi compilado em `artifacts/installer` e validado pela release workflow. O ZIP portátil e os hashes são gerados por `scripts/release.ps1`.
+O instalador `v0.3.0` foi compilado com Inno Setup 6.7.3, publicado pelo workflow oficial e validado pela API do GitHub. O ZIP portátil e os hashes são gerados por `scripts/release.ps1`.
 
-Artefatos publicados e confirmados pela API do GitHub:
+Artefatos publicados e confirmados:
 
-- instalador `v0.2.1`: 68.188.344 bytes, SHA-256 `6CB3F506ECA85265D71C079593CC374B1A1B7B0AA8B04C914D13C82521ED42EB`;
-- portátil `v0.2.1`: 95.092.388 bytes, SHA-256 `0DD0D36E78F10A2413B1E105840C8187B0190CB356850FBE01C4A1B9AC2B4B8C`;
-- manifesto: `update-manifest.json`, 967 bytes.
+- instalador `v0.3.0`: 68.269.512 bytes, SHA-256 `17f717aaca26fba72cc24b50e0a27010b33a93c97ccc0f898acaafc8749e8052`;
+- portátil `v0.3.0`: 95.229.984 bytes, SHA-256 `8ea5998bc7a6e64f1a73e8fb694517428d435f283b8deeb2c2725f1715b6632d`;
+- `SHA256SUMS.txt`: 231 bytes;
+- `update-manifest.json`: 973 bytes, canal `experimental`;
+- URL: `https://github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.3.0`.
 
 Ainda não foi testada uma migração sobre uma instalação produtiva anterior nem uma atualização real baixada de uma release pública; esses cenários exigem uma release de teste/controlada e estão descritos como próximos testes.
 

@@ -12,6 +12,8 @@ Editor desktop independente para inspeção e edição experimental dos dados do
 
 A versão estável publicada anterior é [`v0.2.1`](https://github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.2.1). A v0.3.0 permanece experimental até a validação visual dentro do jogo e a reconstrução geral de CPK serem concluídas.
 
+Os artefatos da pré-release estão disponíveis em [`v0.3.0`](https://github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.3.0). O atualizador automático continua priorizando releases estáveis.
+
 ## Funcionalidades verificadas
 
 - detecção da instalação do PES 2017, Data, download, DpFileList, patches e saves;

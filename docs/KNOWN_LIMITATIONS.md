@@ -26,7 +26,7 @@
 - `CpkMaker.DLL` não é distribuída por licença/procedência não verificadas.
 - Authenticode e assinatura de manifesto ainda não estão disponíveis; SHA-256 comprova integridade do arquivo recebido, não a identidade do publicador.
 - Os testes proprietários usam arquivos locais e não podem ser executados no CI público.
-- A atualização e o instalador herdados da Fase 02 precisam de teste isolado específico para a v0.3.0.
+- A instalação/desinstalação isolada da v0.3.0 foi testada; migração real sobre uma instalação anterior, atualização automática baixada e recuperação após falha ainda não foram executadas.
 
 ## Classificação
 
