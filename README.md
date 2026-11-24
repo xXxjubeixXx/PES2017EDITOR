@@ -1,61 +1,80 @@
-# PES 2017 Editor
+# PES 2017 Database Editor
 
-Aplicativo simples para Windows que abre os arquivos CPK do PES 2017, extrai seu conteúdo e cria um CPK modificado. A interface usa Tkinter e não exige pacotes Python extras.
+![PES 2017 Database Editor](assets/PES2017DatabaseEditor.png)
+
+Editor desktop independente para investigação, inspeção e futura edição dos dados do Pro Evolution Soccer 2017 para Windows. O projeto não possui vínculo oficial com a Konami.
+
+[![CI](https://github.com/xXxjubeixXx/PES2017EDITOR/actions/workflows/ci.yml/badge.svg)](https://github.com/xXxjubeixXx/PES2017EDITOR/actions/workflows/ci.yml)
+
+## Versão atual
+
+`0.2.0` — Fase 02: distribuição, instalador e atualizações.
+
+Baixe a [última release estável](https://github.com/xXxjubeixXx/PES2017EDITOR/releases/latest):
+
+- instalador recomendado: `PES2017DatabaseEditor-Setup-v0.2.0-win-x64.exe`;
+- versão portátil: `PES2017DatabaseEditor-Portable-v0.2.0-win-x64.zip`.
+
+Cada release acompanha `SHA256SUMS.txt` e `update-manifest.json`. A assinatura Authenticode ainda não está disponível; hash SHA-256 verifica integridade, mas não autentica sozinho a identidade do publicador.
+
+## Funcionalidades
+
+- detecção da instalação do PES 2017;
+- indexação virtual de CPKs e leitura CRI UTF nativa;
+- explorador, pesquisa, duplicatas e extração individual;
+- preview hexadecimal e parser inicial WESYS;
+- dashboard baseado em fatos reais;
+- cache SQLite e dados do usuário em `%LOCALAPPDATA%\PES2017EDITOR`;
+- interface escura em português brasileiro;
+- verificação de releases estáveis pelo GitHub;
+- download validado por tamanho e SHA-256;
+- atualizador auxiliar que fecha o editor antes de iniciar o instalador;
+- instalador Inno Setup com atalhos e desinstalação;
+- pacote portátil self-contained Windows x64.
+
+As funcionalidades de edição estruturada, descompressão completa, reconstrução CPK e aplicação de patches continuam explicitamente limitadas até haver evidência e testes suficientes.
 
 ## Requisitos
 
-- Windows 10 ou 11
-- Python 3.10 ou mais recente, instalado com suporte ao Tkinter
-- Uma cópia instalada do PES 2017
+Para usuários: Windows 10/11 x64. O instalador e a versão portátil são self-contained e não exigem SDK, runtime .NET, Python, Java, SQLite separado ou ferramentas externas de CPK.
 
-## Iniciar
+Para desenvolvimento: Windows x64, .NET SDK 10.x, PowerShell 7 ou Windows PowerShell compatível, Git e Inno Setup 6 para gerar o instalador. Os testes que usam CPKs reais são opcionais quando os arquivos proprietários do PES não estão disponíveis.
 
-1. Baixe o código deste repositório e extraia a pasta.
-2. Execute `iniciar_editor.bat`.
-3. Selecione a pasta principal do jogo (a que contém `PES2017.exe`).
-4. Escolha um arquivo da lista em `Data`.
-5. Extraia o CPK inteiro ou um arquivo individual.
-6. Edite os arquivos extraídos com a ferramenta apropriada ao formato (por exemplo, `.bin`, `.ftex` ou `.dds`).
-7. Use **Reconstruir CPK…** para criar uma cópia modificada, ou **Instalar no jogo com backup…** para substituir o CPK selecionado.
+## Compilar e testar
 
-Antes de substituir um pacote, feche o jogo. O instalador cria uma cópia original em `Backups/PES2017EDITOR` dentro da pasta escolhida do jogo.
+```powershell
+pwsh .\scripts\build.ps1
+pwsh .\scripts\test.ps1
+pwsh .\scripts\publish.ps1
+pwsh .\scripts\build-installer.ps1
+```
 
-## Editor de banco de dados
+O processo prefere o SDK x64 em `%ProgramFiles%\dotnet` e não depende de caminhos do computador do mantenedor. Os artefatos locais ficam em `artifacts/` e não são enviados ao Git.
 
-Abra `dt10_win.cpk` e clique em **Editar jogadores e times…** para:
+## Dados e segurança
 
-- alterar nome e nome de camisa de jogadores existentes;
-- criar um jogador copiando as características de outro jogador e vinculá-lo a um time;
-- alterar o nome em inglês de um time;
-- criar uma liga experimental copiando as regras de uma liga-base, com times e elencos gerados;
-- acrescentar um registro de time copiando outro;
-- exportar/importar os nomes existentes por CSV;
-- consultar a lista de competições do banco.
+O editor não altera automaticamente a instalação do PES 2017. Configurações, recentes, cache, logs, projetos e atualizações baixadas ficam em `%LOCALAPPDATA%\PES2017EDITOR`; o instalador fica em `Program Files` e não armazena dados modificáveis do usuário ali.
 
-Você pode gravar em um CPK novo ou usar **Instalar no jogo com backup…**. A instalação guarda o original em `Backups/PES2017EDITOR`. A criação de jogadores, times e ligas aumenta registros nos bancos e é experimental; a compatibilidade com o jogo ainda precisa ser confirmada. O gerador de liga copia os atributos dos times/jogadores-base e cria nomes genéricos que podem ser renomeados depois.
+O `.gitignore` bloqueia executáveis/CPKs/BINs do jogo, saves, backups, credenciais, certificados e artefatos locais. Nenhuma DLL proprietária do CPK Tool é redistribuída.
 
-## Limites atuais
+## Arquitetura
 
-- O gerador de liga acrescenta linhas em Competition, CompetitionRegulation e CompetitionEntry. O executável pode impor limites de IDs, regiões, menus ou memória que ainda não foram confirmados em uma partida.
-- O editor de jogadores permite nomes e cópia de um modelo; ainda não edita atributos, aparência, posições ou todos os campos de idioma.
-- O editor de times altera o nome em inglês. A criação acrescenta um registro, mas ainda não configura nome em todos os idiomas, escudo, uniforme, técnico ou vaga em liga.
-- Uniformes, faces e estádios ainda dependem de ferramentas específicas para seus formatos.
-- A reconstrução grava os arquivos extraídos sem a compressão CRILAYLA original. O conteúdo permanece no CPK, mas o pacote reconstruído pode ocupar mais espaço.
-- A base do jogo usada para mapear os registros tem 12.333 registros de jogadores e 501 registros de times. Acrescentar registros além disso não foi validado em uma sessão real do jogo.
-- Alguns CPKs ou variantes com tabelas e compressões incomuns podem não ser compatíveis. Se o arquivo não puder ser lido, o original permanece intacto.
-- A reconstrução exige espaço livre suficiente para o CPK de saída. Extrações de pacotes grandes também podem precisar de vários gigabytes.
-- Faça uma cópia externa dos dados importantes antes de modificar arquivos de jogo.
+O código é separado em `Core`, `Cpk`, `Binary`, `Database`, `Game`, `Infrastructure`, `App` e `Updater`. O contrato `ICpkArchiveBackend` mantém a UI desacoplada de bibliotecas nativas. Consulte [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
-## Estrutura do projeto
+## Atualizações
 
-- `src/pes2017editor/app.py`: interface Tkinter.
-- `src/pes2017editor/cpk.py`: leitura, extração e gravação do contêiner CPK/UTF.
-- `iniciar_editor.bat`: atalho para iniciar no Windows.
+O aplicativo consulta de forma assíncrona `https://api.github.com/repos/xXxjubeixXx/PES2017EDITOR/releases/latest`, apenas para releases estáveis. A consulta pode ser desativada em Configurações. Nenhum token é embutido. O instalador baixado só é aceito após validar origem HTTPS permitida, tamanho e SHA-256; atualização e execução exigem ação do usuário.
 
-## Créditos
+## Documentação
 
-A análise local do jogo usou como referência de formato a documentação e a implementação pública de CPK/UTF do projeto [the4chancup/pes-file-tools](https://github.com/the4chancup/pes-file-tools). O código deste editor é uma implementação independente para este fluxo e não inclui arquivos do jogo.
+- [`docs/PHASE_02_REPORT.md`](docs/PHASE_02_REPORT.md)
+- [`docs/INSTALLER.md`](docs/INSTALLER.md)
+- [`docs/UPDATE_SYSTEM.md`](docs/UPDATE_SYSTEM.md)
+- [`docs/VERSIONING.md`](docs/VERSIONING.md)
+- [`docs/RELEASE_PROCESS.md`](docs/RELEASE_PROCESS.md)
+- [`docs/GITHUB_ACTIONS.md`](docs/GITHUB_ACTIONS.md)
+- [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md)
+- [`docs/INSTALLER_TEST_RESULTS.md`](docs/INSTALLER_TEST_RESULTS.md)
+- [`docs/KNOWN_LIMITATIONS.md`](docs/KNOWN_LIMITATIONS.md)
 
-## Licença
-
-O código original deste projeto está sob a licença MIT. Os arquivos do jogo e os arquivos modificados continuam sujeitos aos direitos dos respectivos titulares.
+O licenciamento do código autoral permanece pendente de decisão do proprietário do projeto. As licenças das dependências estão documentadas separadamente.

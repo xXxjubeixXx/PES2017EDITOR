@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>PES2017Editor.Database</AssemblyName>
+    <RootNamespace>PES2017Editor.Database</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.0" />
+    <ProjectReference Include="..\PES2017Editor.Cpk\PES2017Editor.Cpk.csproj" />
+  </ItemGroup>
+</Project>

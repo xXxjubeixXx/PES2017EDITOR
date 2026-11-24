@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>PES2017Editor.Binary</AssemblyName>
+    <RootNamespace>PES2017Editor.Binary</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PES2017Editor.Cpk\PES2017Editor.Cpk.csproj" />
+  </ItemGroup>
+</Project>
