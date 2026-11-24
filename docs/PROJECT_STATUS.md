@@ -43,7 +43,7 @@ Fase 01 implementada e Fase 02 implementada para distribuição. A solução com
 - release principal: https://github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.2.1;
 - branch de backup: `archive/pre-phase-02-20261124` → `7eef9445fd4177963a1c996b0cf0a1997e8dcff2`.
 
-Executável publicado: `artifacts/publish/win-x64/PES2017DatabaseEditor.exe` (self-contained, win-x64, SHA-256 `BD40784B0948057610D451025BE0A6A67A05882E1E291608A0B8744F263B36D9`).
+Executável local gerado: `artifacts/installer-payload/PES2017DatabaseEditor.exe` (self-contained, win-x64, versão 0.2.1, 142.821.072 bytes). Os artefatos recomendados são os anexados à release remota `v0.2.1`, verificados por manifesto e SHA-256.
 
 ## Problemas existentes
 
