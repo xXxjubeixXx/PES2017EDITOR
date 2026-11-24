@@ -1,5 +1,7 @@
 # Relatório da Fase 02
 
+Após a publicação inicial, a correção `v0.2.1` foi preparada para incluir o projeto CPK que havia sido ocultado por um padrão excessivo do `.gitignore`. A `v0.2.0` foi preservada sem force-push; a `v0.2.1` passa a ser a versão recomendada.
+
 ## Estado
 
 Implementação concluída para versionamento, distribuição Windows, instalador e atualizador. A release pública foi criada e verificada remotamente.

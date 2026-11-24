@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1 — correção de empacotamento
+
+- inclusão do módulo CPK ausente na árvore publicada;
+- separação entre testes públicos e testes que exigem fixtures proprietárias;
+- validação manual do workflow de release sem sobrescrever `v0.2.0`.
+
 ## 0.2.0 — Fase 02
 
 - Centralizado o versionamento SemVer em `Directory.Build.props`.

@@ -8,12 +8,12 @@ Editor desktop independente para investigação, inspeção e futura edição do
 
 ## Versão atual
 
-`0.2.0` — Fase 02: distribuição, instalador e atualizações.
+`0.2.1` — correção de empacotamento e publicação da Fase 02.
 
 Baixe a [última release estável](https://github.com/xXxjubeixXx/PES2017EDITOR/releases/latest):
 
-- instalador recomendado: `PES2017DatabaseEditor-Setup-v0.2.0-win-x64.exe`;
-- versão portátil: `PES2017DatabaseEditor-Portable-v0.2.0-win-x64.zip`.
+- instalador recomendado: `PES2017DatabaseEditor-Setup-v0.2.1-win-x64.exe`;
+- versão portátil: `PES2017DatabaseEditor-Portable-v0.2.1-win-x64.zip`.
 
 Cada release acompanha `SHA256SUMS.txt` e `update-manifest.json`. A assinatura Authenticode ainda não está disponível; hash SHA-256 verifica integridade, mas não autentica sozinho a identidade do publicador.
 

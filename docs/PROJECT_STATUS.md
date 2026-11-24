@@ -4,7 +4,7 @@
 
 ## Estado atual
 
-Fase 01 implementada e Fase 02 implementada localmente para distribuição. A solução compila em Release com o SDK x64 do .NET 10. A versão centralizada é `0.2.0`. O instalador Inno Setup e o sistema de atualização foram implementados e testados em ambiente isolado.
+Fase 01 implementada e Fase 02 implementada para distribuição. A solução compila em Release com o SDK x64 do .NET 10. A versão centralizada é `0.2.1`, correção de empacotamento posterior à release `v0.2.0`. O instalador Inno Setup e o sistema de atualização foram implementados e testados em ambiente isolado.
 
 ## Implementado
 
@@ -25,7 +25,7 @@ Fase 01 implementada e Fase 02 implementada localmente para distribuição. A so
 - 159 entradas indexadas pelo backend atual;
 - `dt10_win.cpk`: 156 entradas nativas;
 - `dt43_jpn_win.cpk`: 3 entradas nativas;
-- 6 testes aprovados;
+- 9 testes aprovados localmente, incluindo 4 testes públicos e 5 testes com fixtures proprietárias;
 - extração sem alteração do CPK de origem;
 - cache SQLite criado em diretório temporário de teste.
 
@@ -38,7 +38,8 @@ Fase 01 implementada e Fase 02 implementada localmente para distribuição. A so
 - serviço de atualização e manifesto implementados;
 - workflows `ci.yml` e `release.yml` criados;
 - tag/release `v0.2.0` publicada e confirmada remotamente;
-- commit publicado: `1df85a4f13a008da9f363c345f4c630809508a8c`;
+- correção `v0.2.1` preparada para publicação sem reescrever `v0.2.0`;
+- commit da implementação publicado: `1df85a4f13a008da9f363c345f4c630809508a8c`;
 - release: https://github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.2.0;
 - branch de backup: `archive/pre-phase-02-20261124` → `7eef9445fd4177963a1c996b0cf0a1997e8dcff2`.
 

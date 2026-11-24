@@ -11,5 +11,5 @@
 - O pacote SQLite atual emite NU1903 transitivo para `SQLitePCLRaw.lib.e_sqlite3 2.1.11`; a vulnerabilidade precisa ser resolvida ou o cache substituído/atualizado antes de uma distribuição final.
 - O executável gerado requer Windows x64; a validação visual automatizada em WPF deve ser ampliada na próxima fase.
 - Authenticode e assinatura criptográfica do manifesto ainda não estão configurados; SHA-256 não autentica o publicador.
-- A atualização real contra uma release pública ainda precisa ser testada após a primeira publicação da `v0.2.0`.
+- A atualização automática foi validada com HTTP simulado, manifesto e hash; a substituição completa de uma instalação real por uma nova release ainda requer um teste isolado adicional. A release pública `v0.2.0` permanece preservada e `v0.2.1` corrige o empacotamento do código-fonte.
 

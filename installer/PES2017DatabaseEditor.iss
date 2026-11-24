@@ -1,5 +1,5 @@
 #ifndef AppVersion
-  #define AppVersion "0.2.0"
+  #error AppVersion must be supplied by scripts/build-installer.ps1
 #endif
 #ifndef SourceDir
   #define SourceDir "..\artifacts\installer-payload"
