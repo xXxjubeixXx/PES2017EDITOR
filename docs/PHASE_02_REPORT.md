@@ -2,11 +2,13 @@
 
 ## Estado
 
-Implementação local concluída para versionamento, distribuição Windows, instalador e atualizador. A publicação no GitHub depende da validação final do commit e dos artefatos gerados; não declarar uma release até confirmar os dados remotamente.
+Implementação concluída para versionamento, distribuição Windows, instalador e atualizador. A release pública foi criada e verificada remotamente.
 
 ## Repositório
 
 O remoto verificado é `https://github.com/xXxjubeixXx/PES2017EDITOR`, público, branch principal `main`. A autenticação GitHub CLI está disponível. O conteúdo anterior estava no commit `7eef9445fd4177963a1c996b0cf0a1997e8dcff2` e foi preservado na branch remota `archive/pre-phase-02-20261124` antes da substituição.
+
+O commit publicado da implementação é `1df85a4f13a008da9f363c345f4c630809508a8c`, com o commit antigo como pai. A tag `v0.2.0` e a release oficial estão disponíveis em [github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.2.0](https://github.com/xXxjubeixXx/PES2017EDITOR/releases/tag/v0.2.0).
 
 ## Implementação
 
@@ -34,5 +36,5 @@ Nenhum token GitHub, certificado privado ou arquivo proprietário do jogo foi in
 
 ## Próximos passos
 
-Publicar o commit na `main`, criar a tag `v0.2.0`, executar/confirmar o workflow, anexar os quatro artefatos e verificar remotamente a release e o manifesto. Depois, testar atualização real de uma instalação `v0.1.0` ou equivalente em ambiente isolado.
+O commit, a tag, a release e o manifesto foram verificados remotamente. Próximo passo: baixar a release em uma máquina de teste separada e executar uma atualização real sobre uma instalação anterior, sem usar a instalação do jogo como ambiente de teste.
 
