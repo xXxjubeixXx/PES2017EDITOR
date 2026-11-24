@@ -16,18 +16,18 @@ O preparo gera instalador, ZIP portátil, `SHA256SUMS.txt` e `update-manifest.js
 ```powershell
 git status --short
 git add -A
-git commit -m "release: v0.2.0"
+git commit -m "release: v<versao>"
 git push origin main
-git tag -a v0.2.0 -m "PES 2017 Database Editor v0.2.0"
-git push origin v0.2.0
+git tag -a v<versao> -m "PES 2017 Database Editor v<versao>"
+git push origin v<versao>
 pwsh .\scripts\release.ps1 -PrepareOnly
-gh release create v0.2.0 `
-  artifacts/installer/PES2017DatabaseEditor-Setup-v0.2.0-win-x64.exe `
-  artifacts/release/0.2.0/PES2017DatabaseEditor-Portable-v0.2.0-win-x64.zip `
-  artifacts/release/0.2.0/SHA256SUMS.txt `
-  artifacts/release/0.2.0/update-manifest.json `
+gh release create v<versao> `
+  artifacts/installer/PES2017DatabaseEditor-Setup-v<versao>-win-x64.exe `
+  artifacts/release/<versao>/PES2017DatabaseEditor-Portable-v<versao>-win-x64.zip `
+  artifacts/release/<versao>/SHA256SUMS.txt `
+  artifacts/release/<versao>/update-manifest.json `
   --repo xXxjubeixXx/PES2017EDITOR `
-  --title "PES 2017 Database Editor v0.2.0" `
+  --title "PES 2017 Database Editor v<versao>" `
   --notes-file docs/PHASE_02_REPORT.md
 ```
 
@@ -37,8 +37,8 @@ O workflow `release.yml` automatiza a etapa após uma tag compatível. Antes do 
 
 ```powershell
 gh api repos/xXxjubeixXx/PES2017EDITOR/commits/main --jq .sha
-gh release view v0.2.0 --repo xXxjubeixXx/PES2017EDITOR
-gh release view v0.2.0 --repo xXxjubeixXx/PES2017EDITOR --json assets,tagName,url
+gh release view v<versao> --repo xXxjubeixXx/PES2017EDITOR
+gh release view v<versao> --repo xXxjubeixXx/PES2017EDITOR --json assets,tagName,url
 pwsh .\scripts\verify-release.ps1
 ```
 
